@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Commandes Minecraft</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500&display=swap" rel="stylesheet">
+<!--
+  Commandes Minecraft Education — appli de Riga Ludovic (élèves et enseignant).
+  Deux styles : « Minecraft » (par défaut) et « Simple » (épuré, pour l'inclusion).
+  Le contenu est dans le bloc COMMANDES (un identifiant fixe par commande).
+  Pensée d'abord pour le PC, puis le téléphone. Couleurs fixes dans les deux thèmes : le style Minecraft est déjà sombre, le style Simple reste clair.
+-->
+<style>
+:root{
+  --z:1;
+  /* Style Minecraft */
+  --bg:#2B2B2B; --ink:#FFFFFF; --muted:#C8C8C8;
+  --panel:#C6C6C6; --panel-ink:#1E1E1E; --panel-muted:#3F3F3F;
+  --hi:#FFFFFF; --lo:#555555; --edge:#000000;
+  --code-bg:#1E1E1E; --code-ink:#7CFC6A;
+  --btn:#4C8A2E; --btn-hi:#7CC24E; --btn-lo:#2D5419; --btn-ink:#FFFFFF;
+  --chip:#8B8B8B; --chip-ink:#FFFFFF; --chip-on:#4C8A2E;
+  --eleve:#2D6FB3; --prof:#9B3FA8;
+  --pixel:"Pixelify Sans",Arial,Helvetica,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{background:var(--bg);color:var(--ink);font:20px/1.4 Arial,Helvetica,sans-serif;-webkit-text-size-adjust:100%;
+  background-image:
+    linear-gradient(45deg,rgba(255,255,255,.025) 25%,transparent 25%,transparent 75%,rgba(255,255,255,.025) 75%),
+    linear-gradient(45deg,rgba(255,255,255,.025) 25%,transparent 25%,transparent 75%,rgba(255,255,255,.025) 75%);
+  background-size:32px 32px;background-position:0 0,16px 16px;
+  padding-bottom:env(safe-area-inset-bottom,0px)}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer;-webkit-tap-highlight-color:transparent}
+:focus-visible{outline:3px solid #FFD84A;outline-offset:2px}
+
+/* Bandeau herbe et terre */
+.ciel{background:#7DB3F5;padding-top:env(safe-area-inset-top,0px)}
+.bandeau{position:relative;height:118px;overflow:hidden;
+  background:
+    linear-gradient(#5FA83A 0 22px,transparent 22px),
+    repeating-linear-gradient(90deg,#5FA83A 0 12px,#4E9330 12px 24px,#6BB844 24px 36px) top/100% 30px no-repeat,
+    linear-gradient(90deg,#8A5A35 0 16px,#7A4E2D 16px 32px,#94643C 32px 48px) 0 30px/48px 22px,
+    linear-gradient(90deg,#7A4E2D 0 16px,#94643C 16px 32px,#6B4426 32px 48px) 24px 52px/48px 22px,
+    #86593A;}
+.bandeau h1{position:absolute;inset:auto 0 18px 0;margin:0;text-align:center;font-weight:normal;
+  font-size:clamp(28px,5vw,40px);letter-spacing:1px;color:#FFFFFF;text-shadow:3px 3px 0 #3A2A1A}
+.beta{font-size:15px;vertical-align:middle;background:#FFD84A;color:#3A2A1A;padding:2px 8px;text-shadow:none;border:2px solid #3A2A1A}
+body.simple .beta{background:#F2F3F5;color:#1F2933;border:0;border-radius:999px}
+.soleil{position:absolute;top:-6px;right:7%;width:44px;height:44px;background:#FFE15A;box-shadow:0 0 0 6px #FFF0A0}
+
+.wrap{zoom:var(--z);max-width:780px;margin:0 auto;padding:16px 16px 28px;display:flex;flex-direction:column;gap:16px}
+
+/* Panneau gris façon inventaire */
+.panneau{background:var(--panel);color:var(--panel-ink);border:3px solid var(--edge);
+  box-shadow:inset 3px 3px 0 var(--hi),inset -3px -3px 0 var(--lo);padding:14px 16px}
+.reglages{display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center}
+.reg{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.reg .lab{font-size:16px;color:var(--panel-muted)}
+.pill{min-height:44px;padding:6px 14px;border:3px solid var(--edge);background:#8B8B8B;color:#FFFFFF;font-size:17px;
+  box-shadow:inset 3px 3px 0 #ABABAB,inset -3px -3px 0 #5A5A5A}
+.pill[aria-pressed="true"]{background:var(--btn);box-shadow:inset 3px 3px 0 var(--btn-hi),inset -3px -3px 0 var(--btn-lo)}
+
+/* Recherche */
+.cherche label{display:block;font-size:22px;margin-bottom:8px}
+.champ{display:flex;align-items:center;gap:10px;background:#000000;border:3px solid #A0A0A0;padding:6px 12px}
+.champ svg{flex:none}
+.champ input{flex:1;min-width:0;border:0;background:transparent;color:#FFFFFF;font-size:24px;padding:8px 0;outline:none}
+.champ input::placeholder{color:#A8A8A8}
+.effacer{flex:none;min-width:44px;min-height:44px;border:0;background:transparent;color:#FFFFFF;font-size:26px}
+.idees{margin-top:10px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:16px;color:var(--panel-muted)}
+.idee{min-height:40px;padding:4px 12px;border:2px solid var(--edge);background:#FFFFFF;color:#1E1E1E;font-size:17px}
+
+/* Filtres */
+.filtres{display:flex;flex-direction:column;gap:10px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:6px 12px;border:3px solid var(--edge);
+  background:var(--chip);color:var(--chip-ink);font-size:17px;box-shadow:inset 3px 3px 0 #ABABAB,inset -3px -3px 0 #5A5A5A}
+.chip[aria-pressed="true"]{background:var(--chip-on);box-shadow:inset 3px 3px 0 var(--btn-hi),inset -3px -3px 0 var(--btn-lo)}
+.chip svg{width:22px;height:22px;flex:none}
+
+.compte{font-size:17px;color:var(--muted);margin:0 2px}
+
+/* Cartes de commande */
+.liste{display:flex;flex-direction:column;gap:14px}
+.carte{display:flex;flex-direction:column;gap:8px;padding:12px 14px}
+.carte-haut{display:flex;align-items:center;gap:12px}
+.carte-haut svg{width:36px;height:36px;flex:none}
+.carte-haut{flex-wrap:wrap}
+.titre{font-size:22px;margin:0;flex:1}
+.badge{flex:none;font-size:14px;padding:2px 8px;color:#FFFFFF;border:2px solid var(--edge)}
+.badge.eleve{background:var(--eleve)}
+.badge.enseignant{background:var(--prof)}
+.badge.teste{background:#22804A}
+.badge.edu{background:#0F7B7B}
+.chip[data-pub=creation]{background:#B8860B;box-shadow:inset 3px 3px 0 #E0B13A,inset -3px -3px 0 #7A5A07}
+.chip[data-pub=creation][aria-pressed="true"]{background:var(--chip-on);box-shadow:inset 3px 3px 0 var(--btn-hi),inset -3px -3px 0 var(--btn-lo)}
+body.simple .chip[data-pub=creation]{background:#FAF0C8;color:#1F2933;border-color:#E9D88A}
+body.simple .chip[data-pub=creation][aria-pressed="true"]{background:#1F2933;color:#FFFFFF}
+.code{background:var(--code-bg);color:var(--code-ink);font:22px/1.35 Menlo,Consolas,"Courier New",monospace;padding:10px 12px;
+  border:2px solid var(--edge);overflow-wrap:anywhere;user-select:all;-webkit-user-select:all}
+.expl{margin:0;font-size:19px}
+.exemple{margin:0;font-size:17px;color:var(--panel-muted)}
+.exemple code{font:17px Menlo,Consolas,monospace;color:var(--panel-ink)}
+.actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.carte .actions{justify-content:space-between}
+.btn.hp{flex:none;width:54px;height:50px;padding:0;justify-content:center;border-radius:0}
+.hp svg{width:26px;height:26px}
+body.simple .hp{border-radius:999px}
+.btn{display:inline-flex;align-items:center;gap:8px;min-height:50px;padding:6px 18px;border:3px solid var(--edge);
+  background:var(--btn);color:var(--btn-ink);font-size:19px;box-shadow:inset 3px 3px 0 var(--btn-hi),inset -3px -3px 0 var(--btn-lo)}
+.btn.second{background:#8B8B8B;box-shadow:inset 3px 3px 0 #ABABAB,inset -3px -3px 0 #5A5A5A}
+.btn:active,.pill:active,.chip:active{transform:scale(.98)}
+.btn.fait{background:#2B6CB0;box-shadow:inset 3px 3px 0 #5C9BE0,inset -3px -3px 0 #1A4677}
+
+.champs{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:flex-end}
+.champ-c{display:flex;flex-direction:column;gap:4px;font-size:16px;color:var(--panel-muted);flex:1 1 200px;min-width:0}
+.champ-c.court{flex:0 1 96px}
+.champ-c[hidden]{display:none}
+.champ-c input,.champ-c select{min-height:48px;font-size:20px;padding:6px 10px;border:3px solid var(--edge);background:#FFFFFF;color:#1E1E1E;width:100%;border-radius:0}
+.champ-c select{-webkit-appearance:none;appearance:none;background-image:linear-gradient(45deg,transparent 50%,#1E1E1E 50%),linear-gradient(135deg,#1E1E1E 50%,transparent 50%);background-position:calc(100% - 18px) 50%,calc(100% - 12px) 50%;background-size:6px 6px;background-repeat:no-repeat;padding-right:30px}
+.code .vide-ph{color:#FFB3B3}
+.msg{margin:0;font-size:18px;padding:8px 12px;border:2px solid var(--edge)}
+.msg.ko{background:#FCE7E5;color:#8E1F17}
+.msg.ok{background:#E3F5E9;color:#1B6B3D}
+.msg:empty,.expl-choix:empty{display:none}
+.expl-choix{margin:0;font-size:18px;padding:6px 10px;background:rgba(255,255,255,.55);border-left:4px solid var(--btn)}
+.crayon{width:16px;height:16px;vertical-align:-2px}
+.champ-c input::placeholder{color:#8A8A8A}
+body.simple .expl-choix{background:#FFFFFF;border-left-color:#1F2933;border-radius:0 10px 10px 0}
+body.simple .champ-c input,body.simple .champ-c select{border:1.5px solid #CDD5DF;border-radius:12px}
+body.simple .code .vide-ph{color:#B42A20}
+body.simple .msg{border:0;border-radius:12px}
+.vide{text-align:left}
+.vide p{margin:0 0 10px}
+
+/* Aide */
+details.panneau summary{font-size:21px;cursor:pointer;min-height:44px;display:flex;align-items:center}
+details ol{margin:8px 0 4px;padding-left:28px}
+details li{margin:6px 0}
+details p{margin:8px 0;font-size:18px}
+
+body:not(.simple) :is(h1,.titre,.btn,.pill,.chip,.idee,.cherche label,details summary,.badge){font-family:var(--pixel)}
+details.panneau.sources{background:transparent;border:0;box-shadow:none;padding:0;margin-top:24px;color:var(--muted)}
+details.panneau.sources summary{font-size:15px;min-height:36px;color:var(--muted)}
+details.panneau.sources[open]{background:var(--panel);color:var(--panel-ink);padding:10px 14px}
+.sources ul{margin:8px 0;padding-left:22px;font-size:17px}
+.sources li{margin:8px 0}
+.sources a{color:#1F4FA0;overflow-wrap:anywhere}
+.sources p{font-size:16px}
+.btn-aide{display:flex;align-items:center;gap:12px;width:100%;text-align:left;font-size:21px;min-height:56px;cursor:pointer}
+.btn-aide .rond{flex:none;width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;background:var(--btn);color:#FFFFFF;border:3px solid var(--edge);font-size:22px}
+body.simple .btn-aide .rond{border:0;border-radius:999px;background:#1F2933}
+.fond{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:16px;z-index:10}
+.fond[hidden]{display:none}
+.mbox{zoom:var(--z);width:min(620px,100%);max-height:calc(100% / var(--z));overflow:auto;display:flex;flex-direction:column;gap:14px}
+.mbox h2{margin:0;font-size:26px;font-weight:normal}
+.segs{display:flex;gap:5px}.segs i{flex:1;height:7px;background:#8B8B8B}.segs i.on{background:var(--btn)}
+.etape{margin:0;font-size:15px;color:var(--panel-muted)}
+#aideTexte p{margin:0 0 8px;font-size:20px}
+.aide-nav{display:flex;gap:10px;align-items:center}.aide-nav #aideSuiv{margin-left:auto}
+.chat{background:rgba(0,0,0,.78);color:#FFFFFF;font:21px/1.4 Menlo,Consolas,monospace;padding:10px 12px;border:2px solid var(--edge)}
+.chat .c{color:#7CFC6A}.chat .r{color:#FF8A80}.chat .curseur{display:inline-block;width:10px;height:20px;background:#FFFFFF;vertical-align:-3px;animation:clic 1s steps(1) infinite}
+@keyframes clic{50%{opacity:0}}
+.symb{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:19px;align-items:center}
+.symb code{font:22px Menlo,Consolas,monospace;background:#1E1E1E;color:#7CFC6A;padding:2px 8px;text-align:center}
+body.simple .mbox{border-radius:24px}
+body.simple .segs i{background:#E4E7EB;border-radius:3px}body.simple .segs i.on{background:#1F2933}
+body.simple .chat{border:0;border-radius:12px}
+body.simple .symb code{background:#F2F3F5;color:#1F2933;border-radius:8px}
+.cache{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+/* --- Barre du haut (fixe) */
+.haut{position:sticky;top:0;z-index:6;background:#313131;border-bottom:3px solid #000000;padding-top:env(safe-area-inset-top,0px)}
+.herbe{height:10px;background:repeating-linear-gradient(90deg,#5FA83A 0 12px,#4E9330 12px 24px,#6BB844 24px 36px),#5FA83A;border-bottom:4px solid #86593A}
+.haut-in{zoom:var(--z);max-width:1440px;margin:0 auto;padding:10px 16px;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:16px;align-items:center}
+.logo{display:flex;align-items:center;gap:10px;background:none;border:0;color:#FFFFFF;font-size:22px;padding:4px 0;text-align:left}
+.logo svg{width:34px;height:34px;flex:none}
+.logo .beta{font-size:13px}
+.haut .champ{max-width:720px;width:100%;justify-self:center;padding:2px 10px}
+.haut .champ input{font-size:21px;padding:8px 0}
+.champ .kbd{color:#A8A8A8;flex:none}
+.outils{display:flex;gap:8px}
+.outil{display:flex;align-items:center;gap:8px;min-height:46px;padding:4px 12px;border:3px solid #000000;background:#8B8B8B;color:#FFFFFF;font-size:17px;box-shadow:inset 3px 3px 0 #ABABAB,inset -3px -3px 0 #5A5A5A}
+.outil .ico svg{width:22px;height:22px;display:block}
+.outil.decouv-btn{background:#B8860B;box-shadow:inset 3px 3px 0 #E0B13A,inset -3px -3px 0 #7A5A07}
+.outil[aria-expanded="true"]{background:var(--btn);box-shadow:inset 3px 3px 0 var(--btn-hi),inset -3px -3px 0 var(--btn-lo)}
+.reglages{position:absolute;right:16px;top:calc(100% + 6px);width:min(420px,calc(100vw - 32px));display:flex;flex-direction:column;gap:12px;align-items:flex-start;zoom:var(--z)}
+.reglages[hidden]{display:none}
+/* --- Page : menu à gauche + contenu */
+.page{max-width:1440px;margin:0 auto;padding:18px 16px 0;display:grid;grid-template-columns:260px minmax(0,1fr);gap:22px;align-items:start}
+.menu{zoom:var(--z);position:sticky;top:96px;max-height:calc(100vh - 110px);overflow:auto;display:flex;flex-direction:column;gap:4px;padding-bottom:12px}
+.menu .sep{margin:14px 6px 4px;font-size:14px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+.vue{display:flex;align-items:center;gap:10px;width:100%;min-height:44px;padding:6px 10px;border:3px solid transparent;background:transparent;color:var(--ink);font-size:17px;text-align:left}
+.vue svg{width:22px;height:22px;flex:none}
+.vue .n{margin-left:auto;font-size:14px;color:var(--muted)}
+.vue:hover{background:rgba(255,255,255,.08)}
+.vue[aria-current="true"]{background:var(--btn);border-color:#000000;color:#FFFFFF;box-shadow:inset 3px 3px 0 var(--btn-hi),inset -3px -3px 0 var(--btn-lo)}
+.vue[aria-current="true"] .n{color:#FFFFFF}
+.vue.etoile:not([aria-current="true"]){color:#FFD84A}
+.wrap{max-width:none;margin:0;padding:0 0 28px;gap:14px}
+.tete{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.tete h2{margin:0;font-size:28px;font-weight:normal}
+.tete .compte{margin:0}
+.wrap>.idees{margin:0;color:var(--muted)}
+.wrap>.idees[hidden]{display:none}
+.liste{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,400px),1fr));gap:14px;align-items:start}
+.liste>.vide{grid-column:1/-1}
+/* --- Découvrir */
+.decouv{width:min(720px,100%)}
+.dec-haut{display:flex;align-items:center;gap:12px}.dec-haut h2{flex:1}
+.btn.croix{min-width:50px;justify-content:center;padding:0}
+#decCarte .carte{margin:0}
+@media (max-width:900px){
+  .page{grid-template-columns:minmax(0,1fr);padding-top:10px}
+  .menu{position:static;max-height:none;flex-direction:row;overflow-x:auto;gap:6px;padding:2px 0 8px;scroll-snap-type:x proximity}
+  .menu .sep{display:none}
+  .vue{width:auto;flex:none;white-space:nowrap;border-color:#000000;background:#8B8B8B;color:#FFFFFF;scroll-snap-align:start}
+  .vue .n{display:none}
+}
+@media (max-width:760px){
+  .haut-in{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"logo outils" "champ champ";gap:8px 10px}
+  .logo{grid-area:logo}.outils{grid-area:outils}.haut .champ{grid-area:champ;max-width:none}
+  .outil .lib,.champ .kbd,.logo .beta{display:none}
+  .outil{padding:4px 10px}
+  .logo{font-size:19px}
+  .menu{top:auto}
+  .haut{position:relative}   /* sur téléphone, la barre ne reste pas collée : plus de place pour les cartes */
+}
+/* Style Simple */
+body.simple .haut{background:#FFFFFF;border-bottom:1.5px solid #E4E7EB}
+body.simple .herbe{display:none}
+body.simple .logo{color:#1F2933}
+body.simple .outil{background:#F2F3F5;color:#1F2933;border:0;box-shadow:none;border-radius:999px}
+body.simple .outil.decouv-btn{background:#FAF0C8}
+body.simple .outil[aria-expanded="true"]{background:#1F2933;color:#FFFFFF}
+body.simple .reglages{background:#FFFFFF;border:1.5px solid #E4E7EB}
+body.simple .vue{border:0;border-radius:12px;color:#1F2933}
+body.simple .vue:hover{background:#F2F3F5}
+body.simple .vue[aria-current="true"]{background:#1F2933;color:#FFFFFF;box-shadow:none}
+body.simple .vue.etoile:not([aria-current="true"]){color:#8A6100}
+@media (max-width:900px){body.simple .vue:not([aria-current="true"]){background:#F2F3F5;color:#1F2933}}
+/* --- v0.8 : liste + détail (une seule commande détaillée à la fois) */
+.page{grid-template-columns:240px minmax(0,1fr)}
+.colonnes{display:grid;grid-template-columns:minmax(260px,360px) minmax(0,1fr);gap:22px;align-items:start}
+.liste-col{display:flex;flex-direction:column;gap:8px;min-width:0}
+.tete{flex-direction:column;align-items:flex-start;gap:2px}
+.tete h2{font-size:24px}
+.lignes{display:flex;flex-direction:column;border-top:1px solid rgba(255,255,255,.12)}
+.ligne{display:flex;align-items:center;gap:12px;width:100%;min-height:48px;padding:6px 10px;border:0;border-bottom:1px solid rgba(255,255,255,.12);background:transparent;color:var(--ink);font-size:18px;text-align:left}
+.ligne svg{width:22px;height:22px;flex:none}
+.ligne:hover{background:rgba(255,255,255,.07)}
+.ligne[aria-current="true"]{background:#C6C6C6;color:#1E1E1E;box-shadow:inset 4px 0 0 var(--btn-hi)}
+.ligne .pt{margin-left:auto;font-size:13px;color:var(--muted)}
+.ligne[aria-current="true"] .pt{color:#3F3F3F}
+.rien{margin:12px 4px;color:var(--muted)}
+.detail{position:sticky;top:96px;min-width:0;display:flex;flex-direction:column;gap:12px}
+.detail .carte{padding:18px 20px;gap:12px}
+.detail .titre{font-size:26px}
+.detail .code{font-size:24px}
+.retour{display:none;align-self:flex-start}
+.menu-style{margin-top:16px;display:flex;flex-direction:column;gap:6px;padding:10px 6px;border-top:1px solid rgba(255,255,255,.12)}
+.menu-style .lab{font-size:14px;color:var(--muted)}
+.menu-style .boutons{display:flex;gap:6px}
+.menu-style .pill{min-height:40px;font-size:15px;padding:4px 10px}
+.vide-detail{display:flex;flex-direction:column;gap:10px}
+.vide-detail .actions{flex-wrap:wrap}
+@media (max-width:1100px){.colonnes{grid-template-columns:minmax(220px,300px) minmax(0,1fr)}}
+@media (max-width:900px){
+  .page{grid-template-columns:minmax(0,1fr)}
+  .menu-style{display:none}
+}
+@media (max-width:760px){
+  .colonnes{grid-template-columns:minmax(0,1fr)}
+  .detail{display:none;position:static}
+  .page.detail-ouvert .detail{display:flex}
+  .page.detail-ouvert .liste-col,.page.detail-ouvert .menu{display:none}
+  .retour{display:inline-flex}
+}
+body.simple .lignes,body.simple .ligne{border-color:#E4E7EB}
+body.simple .ligne{color:#1F2933}
+body.simple .ligne:hover{background:#F7F8FA}
+body.simple .ligne[aria-current="true"]{background:#F2F3F5;color:#1F2933;box-shadow:inset 4px 0 0 #1F2933;border-radius:0 10px 10px 0}
+body.simple .menu-style{border-color:#E4E7EB}
+.foot{font-size:13px;color:var(--muted);line-height:1.5;text-align:center;margin-top:10px}
+
+.kbd{font:15px Menlo,Consolas,monospace;border:2px solid currentColor;padding:0 5px;opacity:.8}
+@media (max-width:520px){.titre{font-size:20px}.code{font-size:19px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* ===== Style Simple (épuré, toujours clair) ===== */
+body.simple{
+  --bg:#FFFFFF; --ink:#1F2933; --muted:#5F6B77;
+  --panel:#F2F3F5; --panel-ink:#1F2933; --panel-muted:#4E5965;
+  --code-bg:#FFFFFF; --code-ink:#1F2933;
+  --eleve:#2563A8; --prof:#7A3590;
+  background-image:none}
+body.simple .ciel,body.simple .bandeau{background:#FFFFFF}
+body.simple .bandeau{height:auto;padding:18px 16px 4px}
+body.simple .bandeau h1{position:static;color:#1F2933;text-shadow:none;text-align:left;max-width:748px;margin:0 auto}
+body.simple .beta{font-size:15px;vertical-align:middle;background:#FFD84A;color:#3A2A1A;padding:2px 8px;text-shadow:none;border:2px solid #3A2A1A}
+body.simple .beta{background:#F2F3F5;color:#1F2933;border:0;border-radius:999px}
+.soleil{display:none}
+body.simple .panneau{border:0;box-shadow:none;border-radius:20px}
+body.simple .pill,body.simple .chip,body.simple .btn.second,body.simple .idee{border:1.5px solid #E4E7EB;background:#FFFFFF;color:#1F2933;box-shadow:none;border-radius:999px}
+body.simple .pill[aria-pressed="true"],body.simple .chip[aria-pressed="true"],body.simple .btn{background:#1F2933;color:#FFFFFF;border-color:#1F2933;box-shadow:none;border-radius:999px}
+body.simple .btn.second{background:#FFFFFF;color:#1F2933}
+body.simple .btn.fait{background:#22804A;border-color:#22804A}
+body.simple .champ{background:#FFFFFF;border:2px solid #1F2933;border-radius:16px}
+body.simple .champ input{color:#1F2933}
+body.simple .champ input::placeholder{color:#6A7581}
+body.simple .effacer{color:#1F2933}
+body.simple .champ svg rect{fill:#1F2933}
+body.simple .code{border:1.5px solid #CDD5DF;border-radius:12px}
+body.simple .badge{border:0;border-radius:999px}
+body.simple .chip svg rect,body.simple .carte-haut svg{opacity:1}
+</style>
+</head>
+<body>
+<header class="haut">
+  <div class="herbe" aria-hidden="true"></div>
+  <div class="haut-in">
+    <button type="button" class="logo" data-vue="tout" aria-label="Accueil : toutes les commandes"><span id="logoIco"></span><span class="nom">Commandes Minecraft</span> <span class="beta">bêta 0.9</span></button>
+    <div class="champ" role="search">
+      <svg width="24" height="24" viewBox="0 0 7 7" aria-hidden="true" shape-rendering="crispEdges"><rect x="1" y="0" width="3" height="1" fill="#fff"/><rect x="0" y="1" width="1" height="3" fill="#fff"/><rect x="4" y="1" width="1" height="3" fill="#fff"/><rect x="1" y="4" width="3" height="1" fill="#fff"/><rect x="4" y="4" width="1" height="1" fill="#fff"/><rect x="5" y="5" width="1" height="1" fill="#fff"/><rect x="6" y="6" width="1" height="1" fill="#fff"/></svg>
+      <label for="q" class="cache">Que veux-tu faire ? Écris un mot.</label>
+      <input id="q" type="search" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Que veux-tu faire ? Ex. : voler, nuit, PNJ…" enterkeyhint="search">
+      <span class="kbd" id="raccourci">Ctrl K</span>
+      <button type="button" class="effacer" id="effacer" aria-label="Effacer" hidden>✗</button>
+    </div>
+    <div class="outils">
+      <button type="button" class="outil decouv-btn" id="ouvrirDecouverte"><span class="ico" id="icoDe"></span><span class="lib">Découvrir</span></button>
+      <button type="button" class="outil" id="ouvrirAide"><span class="ico" id="icoAide"></span><span class="lib">Aide</span></button>
+      <button type="button" class="outil" id="ouvrirReglages" aria-expanded="false" aria-controls="reglages"><span class="ico" id="icoReg"></span><span class="lib">Réglages</span></button>
+    </div>
+  </div>
+  <section class="panneau reglages" id="reglages" aria-label="Réglages" hidden>
+    <div class="reg"><span class="lab">Style</span>
+      <button type="button" class="pill" data-sty="minecraft">Minecraft</button>
+      <button type="button" class="pill" data-sty="simple">Simple</button></div>
+    <div class="reg"><span class="lab">Taille du texte</span>
+      <button type="button" class="pill" data-z="0.9"><span style="font-size:14px">A</span> Petit</button>
+      <button type="button" class="pill" data-z="1">A Moyen</button>
+      <button type="button" class="pill" data-z="1.15"><span style="font-size:22px">A</span> Grand</button></div>
+  </section>
+</header>
+
+<div class="page">
+  <nav class="menu" id="menu" aria-label="Thèmes"></nav>
+  <main class="wrap">
+    <div class="colonnes">
+      <section class="liste-col" aria-label="Liste des commandes">
+        <div class="tete"><h2 id="vueTitre">Toutes les commandes</h2><p class="compte" id="compte" aria-live="polite"></p></div>
+        <div class="lignes" id="liste"></div>
+      </section>
+      <section class="detail" id="detail" aria-live="polite"></section>
+    </div>
+
+  <details class="panneau sources">
+    <summary>Sources des données</summary>
+    <ul>
+      <li><b>Forme des commandes</b> et droits Élève / Enseignant : données officielles de Mojang pour Minecraft Bedrock 1.26.30 (dépôt « bedrock-samples »).<br><a href="https://github.com/Mojang/bedrock-samples" target="_blank" rel="noopener">github.com/Mojang/bedrock-samples</a></li>
+      <li><b>Commandes propres à Minecraft Education</b> (/ability, /immutableworld, /wb, objets de chimie, appareil photo) : l'aide officielle de Minecraft Education.<br><a href="https://edusupport.minecraft.net" target="_blank" rel="noopener">edusupport.minecraft.net</a></li>
+      <li><b>Explication des commandes</b> : documentation de Microsoft pour Minecraft Bedrock.<br><a href="https://learn.microsoft.com/fr-fr/minecraft/creator/commands/" target="_blank" rel="noopener">learn.microsoft.com/minecraft/creator/commands</a></li>
+      <li><b>Noms français</b> des objets, effets, animaux et lieux : le wiki Minecraft en français.<br><a href="https://fr.minecraft.wiki" target="_blank" rel="noopener">fr.minecraft.wiki</a></li>
+      <li><b>Blocs propres à Minecraft Education</b> (Frontière, Autoriser, Refuser) : le wiki Minecraft.<br><a href="https://minecraft.wiki" target="_blank" rel="noopener">minecraft.wiki</a></li>
+    </ul>
+    <p>Les textes pour les élèves ont été réécrits en phrases simples. Données consultées en octobre 2026.</p>
+  </details>
+  <div class="foot" id="foot"></div>
+  </main>
+</div>
+
+<div class="fond" id="decouverte" hidden>
+  <div class="mbox panneau decouv" role="dialog" aria-modal="true" aria-labelledby="decTitre">
+    <div class="dec-haut"><h2 id="decTitre">Je découvre une commande</h2><button type="button" class="btn second croix" id="decFermer" aria-label="Fermer">✗</button></div>
+    <div id="decCarte"></div>
+    <div class="aide-nav"><button type="button" class="btn second" id="decTheme">Voir ce thème</button><button type="button" class="btn" id="decAutre">Une autre</button></div>
+  </div>
+</div>
+
+<div class="fond" id="aide" hidden>
+  <div class="mbox panneau" role="dialog" aria-modal="true" aria-labelledby="aideTitre">
+    <div class="segs" id="aideSegs"></div>
+    <p class="etape" id="aideCompte"></p>
+    <h2 id="aideTitre"></h2>
+    <div id="aideIllu"></div>
+    <div id="aideTexte"></div>
+    <div class="aide-nav">
+      <button type="button" class="btn second" id="aidePrec">Retour</button>
+      <button type="button" class="btn second hp" id="aideEcoute" aria-label="Écouter"></button>
+      <button type="button" class="btn" id="aideSuiv">Suivant</button>
+    </div>
+  </div>
+</div>
+<script>
+/* =====================================================================
+   1. APPLI
+   ===================================================================== */
+const APP={cle:'mc-commandes',version:'0.9'};
+
+/* =====================================================================
+   2. CONTENU — une commande = un identifiant fixe (ne jamais le changer)
+   ===================================================================== */
+const TOUTES=[{"id": "c1", "cmd": "/time set <moment>", "titre": "Changer l’heure", "explication": "Choisis le moment de la journée.", "mots": ["jour", "soleil", "matin", "lumière", "heure", "clair", "midi", "journée", "nuit", "soir", "noir", "lune", "étoiles"], "categorie": "Temps et météo", "public": "enseignant", "exemple": "/time set day"}, {"id": "c4", "cmd": "/daylock true", "titre": "Bloquer l'heure", "explication": "L'heure ne bouge plus. Le jour reste le jour. Pour annuler : false à la place de true.", "mots": ["bloquer", "arrêter", "toujours jour", "heure", "figer", "temps"], "categorie": "Temps et météo", "public": "enseignant", "exemple": "/daylock true", "creation": true}, {"id": "c5", "cmd": "/gamerule dodaylightcycle false", "titre": "Arrêter le temps qui passe", "explication": "Le soleil ne bouge plus. L'heure reste la même. Pour annuler : true à la place de false.", "mots": ["arrêter", "soleil", "heure", "cycle", "jour", "nuit", "figer"], "categorie": "Temps et météo", "public": "enseignant", "exemple": "/gamerule dodaylightcycle false", "creation": true}, {"id": "c6", "cmd": "/weather <meteo>", "titre": "Changer la météo", "explication": "Choisis le temps qu’il fait.", "mots": ["beau temps", "soleil", "ciel", "météo", "arrêter la pluie", "pluie", "pleuvoir", "eau", "neige", "nuages", "orage", "éclair", "foudre", "tonnerre", "tempête"], "categorie": "Temps et météo", "public": "enseignant", "exemple": "/weather clear"}, {"id": "c9", "cmd": "/gamerule doweathercycle false", "titre": "Bloquer la météo", "explication": "La météo ne change plus toute seule. Pour annuler : true à la place de false.", "mots": ["météo", "bloquer", "pluie", "arrêter", "temps", "ciel"], "categorie": "Temps et météo", "public": "enseignant", "exemple": "/gamerule doweathercycle false", "creation": true}, {"id": "c10", "cmd": "/tp @s <x> <y> <z>", "titre": "Se téléporter à un endroit", "explication": "Tu vas tout de suite à cet endroit. Les trois nombres sont la position.", "mots": ["téléporter", "aller", "voyager", "position", "coordonnées", "endroit"], "categorie": "Se déplacer", "public": "enseignant", "exemple": "/tp @s 100 70 -50"}, {"id": "c11", "cmd": "/tp @a @s", "titre": "Appeler toute la classe", "explication": "Tous les joueurs viennent près de toi.", "mots": ["rassembler", "appeler", "classe", "groupe", "tous", "venir"], "categorie": "Se déplacer", "public": "enseignant", "exemple": "/tp @a @s"}, {"id": "c12", "cmd": "/tp @s <joueur>", "titre": "Aller vers un joueur", "explication": "Tu vas tout de suite près de ce joueur.", "mots": ["rejoindre", "joueur", "ami", "aller", "téléporter", "trouver"], "categorie": "Se déplacer", "public": "enseignant", "exemple": "/tp @s Alex", "qui": ["@p", "@r", "nom"]}, {"id": "c13", "cmd": "/gamerule showcoordinates true", "titre": "Afficher la position", "explication": "Ta position est écrite en haut de l'écran. Pour annuler : false à la place de true.", "mots": ["coordonnées", "position", "où", "carte", "afficher", "GPS"], "categorie": "Se déplacer", "public": "enseignant", "exemple": "/gamerule showcoordinates true", "creation": true}, {"id": "c14", "cmd": "/spawnpoint @s", "titre": "Choisir où revenir", "explication": "Si tu meurs, tu reviens ici.", "mots": ["revenir", "réapparaître", "mourir", "maison", "départ", "point"], "categorie": "Se déplacer", "public": "enseignant", "exemple": "/spawnpoint @s", "creation": true}, {"id": "c15", "cmd": "/setworldspawn", "titre": "Choisir le départ du monde", "explication": "Les joueurs arrivent ici quand ils entrent dans le monde.", "mots": ["départ", "début", "arrivée", "monde", "point", "accueil"], "categorie": "Se déplacer", "public": "enseignant", "exemple": "/setworldspawn", "creation": true}, {"id": "c16", "cmd": "/locate structure <structure>", "titre": "Trouver un lieu", "explication": "Le jeu donne la position du lieu le plus proche.", "mots": ["trouver", "village", "chercher", "maisons", "position", "structure"], "categorie": "Se déplacer", "public": "enseignant", "exemple": "/locate structure village"}, {"id": "c17", "cmd": "/locate biome <paysage>", "titre": "Trouver un paysage", "explication": "Le jeu donne la position du paysage le plus proche.", "mots": ["trouver", "désert", "forêt", "paysage", "biome", "chercher"], "categorie": "Se déplacer", "public": "enseignant", "exemple": "/locate biome desert"}, {"id": "c18", "cmd": "/give @s <objet> <nombre>", "titre": "Recevoir des objets", "explication": "Tu reçois des objets dans ton inventaire.", "mots": ["donner", "recevoir", "objet", "diamant", "avoir", "inventaire", "épée", "armure"], "categorie": "Objets et inventaire", "public": "enseignant", "exemple": "/give @s diamond 5"}, {"id": "c19", "cmd": "/give @a writable_book", "titre": "Donner un livre à écrire", "explication": "Chaque joueur reçoit un livre. Il peut écrire dedans.", "mots": ["livre", "écrire", "cahier", "texte", "journal", "plume"], "categorie": "Objets et inventaire", "public": "enseignant", "exemple": "/give @a writable_book"}, {"id": "c20", "cmd": "/give @a camera", "titre": "Donner un appareil photo", "explication": "Chaque joueur reçoit un appareil photo pour prendre des photos. (Objet de Minecraft Education.)", "mots": ["photo", "appareil", "image", "capture", "prendre"], "categorie": "Objets et inventaire", "public": "enseignant", "exemple": "/give @a camera", "education": true}, {"id": "c21", "cmd": "/clear @s", "titre": "Vider l'inventaire", "explication": "Tous tes objets disparaissent.", "mots": ["vider", "effacer", "inventaire", "enlever", "supprimer", "objets"], "categorie": "Objets et inventaire", "public": "enseignant", "exemple": "/clear @s"}, {"id": "c22", "cmd": "/clear @a tnt", "titre": "Retirer un objet à tous", "explication": "Cet objet disparaît de l'inventaire de tous les joueurs.", "mots": ["retirer", "enlever", "interdire", "objet", "tous", "confisquer"], "categorie": "Objets et inventaire", "public": "enseignant", "exemple": "/clear @a tnt"}, {"id": "c23", "cmd": "/gamerule keepinventory true", "titre": "Garder ses objets", "explication": "Si tu meurs, tu gardes tes objets. Pour annuler : false à la place de true.", "mots": ["garder", "mourir", "mort", "objets", "inventaire", "perdre"], "categorie": "Objets et inventaire", "public": "enseignant", "exemple": "/gamerule keepinventory true", "creation": true}, {"id": "c24", "cmd": "/enchant @s <enchantement>", "titre": "Enchanter l’objet en main", "explication": "L’objet dans ta main devient plus fort. Il doit accepter cet enchantement.", "mots": ["enchanter", "améliorer", "outil", "magie", "fort", "rapide", "épée", "enchantement", "armure"], "categorie": "Objets et inventaire", "public": "enseignant", "exemple": "/enchant @s efficiency 5"}, {"id": "c25", "cmd": "/kill @e[type=item]", "titre": "Ramasser ce qui traîne", "explication": "Les objets posés par terre disparaissent.", "mots": ["nettoyer", "ranger", "objets", "sol", "effacer", "traîner"], "categorie": "Objets et inventaire", "public": "enseignant", "exemple": "/kill @e[type=item]"}, {"id": "c26", "cmd": "/gamemode <mode> <joueur>", "titre": "Changer de mode de jeu", "explication": "Choisis comment tu joues.", "mots": ["créatif", "voler", "construire", "blocs", "mode", "gratuit", "survie", "manger", "vie", "jouer", "danger", "aventure", "explorer", "casser", "protéger", "parcours", "spectateur", "regarder", "observer", "fantôme", "murs"], "categorie": "Mode de jeu", "public": "enseignant", "exemple": "/gamemode creative @s", "creation": true, "qui": ["@s", "@a[tag=!prof]", "@a", "@p", "nom"]}, {"id": "c30", "cmd": "/difficulty <niveau>", "titre": "Changer la difficulté", "explication": "Choisis la force des monstres.", "mots": ["paisible", "calme", "monstres", "difficulté", "facile", "paix", "niveau", "simple"], "categorie": "Mode de jeu", "public": "enseignant", "exemple": "/difficulty peaceful", "creation": true}, {"id": "c31", "cmd": "/effect @s <effet> 60 1 true", "titre": "Recevoir un effet", "explication": "Tu reçois un effet pendant une minute.", "mots": ["voir", "noir", "nuit", "vision", "grotte", "lumière", "vite", "courir", "rapide", "vitesse", "effet", "eau", "respirer", "nager", "plonger", "mer", "noyer", "invisible", "cacher", "disparaître", "fantôme", "secret", "sauter", "saut", "haut", "bondir", "tomber", "doucement", "plume", "chute", "planer", "lent", "soigner", "vie", "cœurs", "guérir", "santé", "blessé", "faim", "manger", "nourriture", "rassasié", "repas", "potion", "pouvoir"], "categorie": "Mode de jeu", "public": "enseignant", "exemple": "/effect @s night_vision 60 1 true"}, {"id": "c34", "cmd": "/effect @s clear", "titre": "Enlever les effets", "explication": "Tous tes effets s'arrêtent.", "mots": ["enlever", "effets", "arrêter", "normal", "guérir", "potion"], "categorie": "Mode de jeu", "public": "enseignant", "exemple": "/effect @s clear", "decouverte": false}, {"id": "c35", "cmd": "/setblock ~ ~ ~1 <bloc>", "titre": "Poser un bloc", "explication": "Un bloc apparaît devant toi.", "mots": ["poser", "bloc", "placer", "mettre", "construire"], "categorie": "Construire", "public": "enseignant", "exemple": "/setblock ~ ~ ~1 stone", "creation": true}, {"id": "c36", "cmd": "/fill ~-5 ~-1 ~-5 ~5 ~-1 ~5 <bloc>", "titre": "Remplir une zone", "explication": "Une grande zone se remplit avec le même bloc. Pratique pour un sol.", "mots": ["remplir", "sol", "zone", "construire", "carré", "plateforme"], "categorie": "Construire", "public": "enseignant", "exemple": "/fill ~-5 ~-1 ~-5 ~5 ~-1 ~5 grass_block", "creation": true}, {"id": "c37", "cmd": "/fill ~-3 ~ ~-3 ~3 ~5 ~3 air", "titre": "Effacer une zone", "explication": "Les blocs de la zone disparaissent.", "mots": ["effacer", "vider", "détruire", "enlever", "air", "zone"], "categorie": "Construire", "public": "enseignant", "exemple": "/fill ~-3 ~ ~-3 ~3 ~5 ~3 air", "creation": true}, {"id": "c38", "cmd": "/clone 0 64 0 10 70 10 20 64 0", "titre": "Copier une construction", "explication": "Le jeu copie des blocs et les colle ailleurs.", "mots": ["copier", "coller", "dupliquer", "construction", "bâtiment", "pareil"], "categorie": "Construire", "public": "enseignant", "exemple": "/clone 0 64 0 10 70 10 20 64 0", "creation": true}, {"id": "c39", "cmd": "/gamerule pvp false", "titre": "Interdire les combats entre joueurs", "explication": "Les joueurs ne peuvent plus se faire mal. Pour annuler : true à la place de false.", "mots": ["combat", "taper", "frapper", "joueurs", "paix", "bagarre"], "categorie": "Monde et règles", "public": "enseignant", "exemple": "/gamerule pvp false", "creation": true}, {"id": "c40", "cmd": "/gamerule mobgriefing false", "titre": "Protéger les constructions", "explication": "Les monstres ne cassent plus les blocs. Pour annuler : true à la place de false.", "mots": ["protéger", "creeper", "casser", "monstres", "explosion", "constructions"], "categorie": "Monde et règles", "public": "enseignant", "exemple": "/gamerule mobgriefing false", "creation": true}, {"id": "c41", "cmd": "/gamerule tntexplodes false", "titre": "Empêcher la TNT d'exploser", "explication": "La TNT n'explose plus. Pour annuler : true à la place de false.", "mots": ["TNT", "explosion", "exploser", "bombe", "protéger"], "categorie": "Monde et règles", "public": "enseignant", "exemple": "/gamerule tntexplodes false"}, {"id": "c42", "cmd": "/gamerule dofiretick false", "titre": "Empêcher le feu de s'étendre", "explication": "Le feu ne se propage plus. Pour annuler : true à la place de false.", "mots": ["feu", "flammes", "brûler", "incendie", "protéger"], "categorie": "Monde et règles", "public": "enseignant", "exemple": "/gamerule dofiretick false"}, {"id": "c43", "cmd": "/gamerule domobspawning false", "titre": "Empêcher les créatures d'apparaître", "explication": "Les animaux et les monstres n'apparaissent plus tout seuls. Pour annuler : true à la place de false.", "mots": ["créatures", "monstres", "animaux", "apparaître", "calme", "bloquer"], "categorie": "Monde et règles", "public": "enseignant", "exemple": "/gamerule domobspawning false", "creation": true}, {"id": "c44", "cmd": "/gamerule falldamage false", "titre": "Ne plus se blesser en tombant", "explication": "Tu peux tomber de haut sans te faire mal. Pour annuler : true à la place de false.", "mots": ["tomber", "chute", "blesser", "mal", "sauter", "vie"], "categorie": "Monde et règles", "public": "enseignant", "exemple": "/gamerule falldamage false"}, {"id": "c45", "cmd": "/immutableworld true", "titre": "Protéger tout le monde", "explication": "Les élèves ne peuvent plus casser ni poser de blocs. Pour annuler : false à la place de true.", "mots": ["protéger", "bloquer", "casser", "interdire", "monde", "construire"], "categorie": "Classe", "public": "enseignant", "exemple": "/immutableworld true", "education": true, "creation": true}, {"id": "c46", "cmd": "/ability <joueur> mayfly true", "titre": "Permettre de voler", "explication": "Les élèves peuvent voler, même en mode survie. Pour annuler : false à la place de true.", "mots": ["voler", "vol", "ailes", "air", "permettre", "ciel"], "categorie": "Classe", "public": "enseignant", "exemple": "/ability @a mayfly true", "education": true, "qui": ["@a", "@a[tag=!prof]", "@p", "nom"]}, {"id": "c47", "cmd": "/ability <joueur> mute true", "titre": "Couper le chat", "explication": "Les élèves ne peuvent plus écrire dans le chat. Pour annuler : false à la place de true.", "mots": ["chat", "silence", "muet", "écrire", "bloquer", "messages"], "categorie": "Classe", "public": "enseignant", "exemple": "/ability @a mute true", "education": true, "qui": ["@a[tag=!prof]", "@a", "@p", "nom"]}, {"id": "c48", "cmd": "/ability <joueur> worldbuilder true", "titre": "Donner le droit de construire", "explication": "Les élèves peuvent construire, même dans un monde protégé. Pour annuler : false à la place de true.", "mots": ["construire", "droit", "bâtisseur", "permettre", "blocs", "autoriser"], "categorie": "Classe", "public": "enseignant", "exemple": "/ability Alex worldbuilder true", "education": true, "creation": true, "qui": ["@a", "@p", "nom"]}, {"id": "c49", "cmd": "/wb", "titre": "Devenir bâtisseur", "explication": "Tu peux poser et casser tous les blocs. Retape pour arrêter.", "mots": ["bâtisseur", "construire", "worldbuilder", "casser", "droit", "bloc"], "categorie": "Classe", "public": "enseignant", "exemple": "/wb", "education": true, "creation": true}, {"id": "c51", "cmd": "/me <message>", "titre": "Dire ce que tu fais", "explication": "Une phrase sur toi s’affiche dans le chat.", "mots": ["moi", "action", "chat", "écrire", "dire", "phrase"], "categorie": "Messages", "public": "eleve", "exemple": "/me construit une maison"}, {"id": "c52", "cmd": "/tell <joueur> <message>", "titre": "Envoyer un message privé", "explication": "Seul ce joueur lit ton message.", "mots": ["message", "privé", "secret", "écrire", "parler", "chuchoter"], "categorie": "Messages", "public": "eleve", "exemple": "/tell Alex rendez-vous au pont", "qui": ["@a", "@p", "@r", "nom"]}, {"id": "c53", "cmd": "/list", "titre": "Voir les joueurs", "explication": "Le jeu écrit le nom de tous les joueurs connectés.", "mots": ["joueurs", "liste", "qui", "noms", "connectés", "classe"], "categorie": "Messages", "public": "eleve", "exemple": "/list", "decouverte": false}, {"id": "c54", "cmd": "/help", "titre": "Voir les commandes", "explication": "Le jeu montre les commandes que tu peux utiliser.", "mots": ["aide", "help", "commandes", "liste", "comment", "question"], "categorie": "Messages", "public": "eleve", "exemple": "/help", "decouverte": false}, {"id": "c55", "cmd": "/say <message>", "titre": "Écrire à toute la classe", "explication": "Ton message s'affiche pour tous les joueurs.", "mots": ["dire", "annoncer", "message", "tous", "écrire", "classe"], "categorie": "Messages", "public": "enseignant", "exemple": "/say Rangez vos affaires !"}, {"id": "c56", "cmd": "/title @a title <texte>", "titre": "Afficher un grand titre", "explication": "Un grand texte apparaît au milieu de l'écran.", "mots": ["titre", "grand", "écran", "afficher", "annonce", "texte"], "categorie": "Messages", "public": "enseignant", "exemple": "/title @a title Bravo !", "creation": true}, {"id": "c57", "cmd": "/title @a actionbar <texte>", "titre": "Afficher une petite consigne", "explication": "Un petit texte apparaît en bas de l'écran.", "mots": ["consigne", "texte", "bas", "écran", "info", "message"], "categorie": "Messages", "public": "enseignant", "exemple": "/title @a actionbar Cherche la clé", "creation": true}, {"id": "c58", "cmd": "/summon <animal>", "titre": "Faire apparaître un animal", "explication": "L’animal choisi apparaît près de toi.", "mots": ["animal", "vache", "créer", "apparaître", "invoquer", "ferme"], "categorie": "Créatures", "public": "enseignant", "exemple": "/summon sheep"}, {"id": "c60", "cmd": "/kill @e[type=<monstre>]", "titre": "Enlever des monstres", "explication": "Tous les monstres de ce type disparaissent.", "mots": ["zombie", "enlever", "monstres", "supprimer", "nettoyer", "tuer"], "categorie": "Créatures", "public": "enseignant", "exemple": "/kill @e[type=zombie]"}, {"id": "c61", "cmd": "/kill @e[type=!player,type=!npc]", "titre": "Enlever les créatures (sauf les PNJ)", "explication": "Les animaux, les monstres et les objets par terre disparaissent. Les joueurs et les PNJ restent.", "mots": ["créatures", "tout", "enlever", "vider", "monstres", "nettoyer"], "categorie": "Créatures", "public": "enseignant", "exemple": "/kill @e[type=!player,type=!npc]"}, {"id": "c62", "cmd": "/tag <joueur> add <équipe>", "titre": "Mettre une étiquette", "explication": "Le joueur reçoit une étiquette. Pratique pour faire des équipes.", "mots": ["équipe", "groupe", "étiquette", "nom", "tag"], "categorie": "Créatures", "public": "enseignant", "exemple": "/tag Alex add equipe1", "qui": ["@p", "@a", "@r", "nom"]}, {"id": "c63", "cmd": "/tp @a <x> <y> <z>", "titre": "Envoyer toute la classe à un endroit", "explication": "Tous les joueurs vont à cet endroit. Les trois nombres sont la position.", "mots": ["envoyer", "classe", "tous", "téléporter", "endroit", "rassembler"], "categorie": "Se déplacer", "public": "enseignant", "exemple": "/tp @a 100 70 -50", "creation": true}, {"id": "c64", "cmd": "/tp @s ~ ~10 ~", "titre": "Monter de 10 blocs", "explication": "Tu montes tout droit de 10 blocs.", "mots": ["monter", "haut", "ciel", "sortir", "coincé", "bloqué"], "categorie": "Se déplacer", "public": "enseignant", "exemple": "/tp @s ~ ~10 ~"}, {"id": "c65", "cmd": "/spreadplayers ~ ~ 5 30 @a", "titre": "Disperser la classe", "explication": "Les joueurs sont placés au hasard autour de toi.", "mots": ["disperser", "hasard", "séparer", "éparpiller", "répartir", "classe"], "categorie": "Se déplacer", "public": "enseignant", "exemple": "/spreadplayers ~ ~ 5 30 @a"}, {"id": "c66", "cmd": "/inputpermission set <joueur> movement disabled", "titre": "Bloquer les déplacements", "explication": "Les joueurs ne peuvent plus bouger. Pour annuler : enabled à la place de disabled.", "mots": ["bloquer", "bouger", "figer", "stop", "immobile", "attention", "calme"], "categorie": "Classe", "public": "enseignant", "exemple": "/inputpermission set @a movement disabled", "creation": true, "qui": ["@a[tag=!prof]", "@a", "@p", "nom"]}, {"id": "c67", "cmd": "/inputpermission set <joueur> camera disabled", "titre": "Bloquer la caméra", "explication": "Les joueurs ne peuvent plus tourner la tête. Pour annuler : enabled à la place de disabled.", "mots": ["caméra", "regard", "tête", "bloquer", "tourner", "figer"], "categorie": "Classe", "public": "enseignant", "exemple": "/inputpermission set @a camera disabled", "qui": ["@a[tag=!prof]", "@a", "@p", "nom"]}, {"id": "c68", "cmd": "/clearspawnpoint @a", "titre": "Effacer le point de retour", "explication": "Les joueurs reviennent au départ du monde quand ils meurent.", "mots": ["effacer", "retour", "réapparaître", "départ", "mourir", "point"], "categorie": "Se déplacer", "public": "enseignant", "exemple": "/clearspawnpoint @a", "decouverte": false}, {"id": "c69", "cmd": "/give @s <blocspecial> 16", "titre": "Recevoir un bloc spécial", "explication": "Tu reçois 16 blocs spéciaux pour gérer la classe.", "mots": ["frontière", "limite", "mur", "bordure", "bloquer", "zone", "autoriser", "permettre", "construire", "bloc", "droit", "refuser", "interdire", "protéger", "invisible", "barrière", "transparent", "lumière", "éclairer", "lampe", "noir", "nuit"], "categorie": "Classe", "public": "enseignant", "exemple": "/give @s border_block 16", "creation": true}, {"id": "c74", "cmd": "/give @a empty_map", "titre": "Donner une carte", "explication": "Chaque joueur reçoit une carte vide. Il l’utilise pour dessiner la zone.", "mots": ["carte", "plan", "map", "dessiner", "explorer", "orientation"], "categorie": "Objets et inventaire", "public": "enseignant", "exemple": "/give @a empty_map"}, {"id": "c75", "cmd": "/give @a compass", "titre": "Donner une boussole", "explication": "Chaque joueur reçoit une boussole. Elle montre le point de départ.", "mots": ["boussole", "nord", "direction", "orientation", "perdu", "chemin"], "categorie": "Objets et inventaire", "public": "enseignant", "exemple": "/give @a compass"}, {"id": "c76", "cmd": "/xp 5L @s", "titre": "Gagner des niveaux", "explication": "Tu gagnes 5 niveaux d’expérience.", "mots": ["expérience", "niveau", "xp", "gagner", "enchanter"], "categorie": "Objets et inventaire", "public": "enseignant", "exemple": "/xp 5L @s"}, {"id": "c83", "cmd": "/fill ~-3 ~ ~-3 ~3 ~4 ~3 <bloc> hollow", "titre": "Construire une salle vide", "explication": "Une boîte creuse apparaît : des murs, un sol et un toit.", "mots": ["salle", "maison", "boîte", "murs", "creux", "abri", "pièce"], "categorie": "Construire", "public": "enseignant", "exemple": "/fill ~-3 ~ ~-3 ~3 ~4 ~3 stone hollow", "creation": true}, {"id": "c84", "cmd": "/fill ~-10 ~-1 ~-10 ~10 ~-1 ~10 grass_block replace stone", "titre": "Remplacer un bloc par un autre", "explication": "Dans la zone, la pierre devient de l’herbe.", "mots": ["remplacer", "changer", "transformer", "bloc", "zone", "sol"], "categorie": "Construire", "public": "enseignant", "exemple": "/fill ~-10 ~-1 ~-10 ~10 ~-1 ~10 grass_block replace stone", "creation": true}, {"id": "c85", "cmd": "/structure save <nom> ~ ~ ~ ~10 ~10 ~10", "titre": "Enregistrer une construction", "explication": "Le jeu garde une copie de la construction, avec un nom.", "mots": ["enregistrer", "sauver", "garder", "copie", "construction", "structure"], "categorie": "Construire", "public": "enseignant", "exemple": "/structure save maison ~ ~ ~ ~10 ~10 ~10", "creation": true}, {"id": "c86", "cmd": "/structure load <nom> ~ ~ ~", "titre": "Recharger une construction", "explication": "La construction enregistrée apparaît ici.", "mots": ["charger", "coller", "recharger", "construction", "structure", "copie"], "categorie": "Construire", "public": "enseignant", "exemple": "/structure load maison ~ ~ ~", "creation": true}, {"id": "c87", "cmd": "/gamerule doimmediaterespawn true", "titre": "Revenir tout de suite", "explication": "Après la mort, le joueur revient sans attendre. Pour annuler : false à la place de true.", "mots": ["revenir", "mourir", "mort", "réapparaître", "attendre", "vite"], "categorie": "Monde et règles", "public": "enseignant", "exemple": "/gamerule doimmediaterespawn true"}, {"id": "c88", "cmd": "/gamerule sendcommandfeedback false", "titre": "Cacher les messages des commandes", "explication": "Les messages des commandes ne s’affichent plus dans le chat. Pour annuler : true à la place de false.", "mots": ["cacher", "messages", "chat", "discret", "silence", "commandes"], "categorie": "Monde et règles", "public": "enseignant", "exemple": "/gamerule sendcommandfeedback false", "creation": true, "decouverte": false}, {"id": "c89", "cmd": "/gamerule drowningdamage false", "titre": "Ne plus se noyer", "explication": "Sous l’eau, les joueurs ne perdent plus de vie. Pour annuler : true à la place de false.", "mots": ["noyer", "eau", "nager", "respirer", "mer", "plonger"], "categorie": "Monde et règles", "public": "enseignant", "exemple": "/gamerule drowningdamage false"}, {"id": "c90", "cmd": "/gamerule firedamage false", "titre": "Ne plus brûler", "explication": "Le feu et la lave ne font plus mal. Pour annuler : true à la place de false.", "mots": ["feu", "brûler", "lave", "flammes", "protéger"], "categorie": "Monde et règles", "public": "enseignant", "exemple": "/gamerule firedamage false"}, {"id": "c91", "cmd": "/gamerule dotiledrops false", "titre": "Les blocs cassés ne donnent rien", "explication": "Un bloc cassé disparaît. Il ne tombe pas par terre. Pour annuler : true à la place de false.", "mots": ["casser", "blocs", "ramasser", "objets", "récolter"], "categorie": "Monde et règles", "public": "enseignant", "exemple": "/gamerule dotiledrops false"}, {"id": "c92", "cmd": "/gamerule spawnradius 0", "titre": "Tout le monde arrive au même endroit", "explication": "Les joueurs arrivent tous exactement au point de départ.", "mots": ["arriver", "départ", "même", "endroit", "point", "spawn"], "categorie": "Monde et règles", "public": "enseignant", "exemple": "/gamerule spawnradius 0", "creation": true}, {"id": "c93", "cmd": "/gamerule doinsomnia false", "titre": "Enlever les phantoms", "explication": "Les phantoms ne viennent plus la nuit. Pour annuler : true à la place de false.", "mots": ["phantom", "dormir", "nuit", "monstres", "lit", "ciel"], "categorie": "Monde et règles", "public": "enseignant", "exemple": "/gamerule doinsomnia false"}, {"id": "c94", "cmd": "/tickingarea add ~ ~ ~ ~20 ~10 ~20 <nom>", "titre": "Garder une zone active", "explication": "Cette zone continue de fonctionner, même quand personne n’est près.", "mots": ["zone", "active", "charger", "fonctionner", "loin", "redstone"], "categorie": "Monde et règles", "public": "enseignant", "exemple": "/tickingarea add ~ ~ ~ ~20 ~10 ~20 classe", "creation": true, "decouverte": false}, {"id": "c95", "cmd": "/kick <joueur> <raison>", "titre": "Faire sortir un joueur", "explication": "Le joueur quitte le monde. Il peut revenir.", "mots": ["sortir", "exclure", "renvoyer", "quitter", "joueur", "expulser"], "categorie": "Classe", "public": "enseignant", "exemple": "/kick Alex Pause", "qui": ["nom"]}, {"id": "c96", "cmd": "/scoreboard objectives add points dummy Points", "titre": "Créer un compteur de points", "explication": "Le jeu prépare un compteur de points pour chaque joueur.", "mots": ["points", "score", "compteur", "jeu", "concours", "équipe"], "categorie": "Classe", "public": "enseignant", "exemple": "/scoreboard objectives add points dummy Points", "creation": true}, {"id": "c97", "cmd": "/scoreboard objectives setdisplay sidebar points", "titre": "Afficher les points", "explication": "Les points s’affichent sur le côté de l’écran.", "mots": ["points", "score", "afficher", "tableau", "classement", "écran"], "categorie": "Classe", "public": "enseignant", "exemple": "/scoreboard objectives setdisplay sidebar points", "creation": true}, {"id": "c98", "cmd": "/scoreboard players add <joueur> points 1", "titre": "Donner un point", "explication": "Le joueur gagne un point.", "mots": ["point", "gagner", "récompense", "score", "bravo", "ajouter"], "categorie": "Classe", "public": "enseignant", "exemple": "/scoreboard players add Alex points 1", "qui": ["@p", "@a", "nom"]}, {"id": "c99", "cmd": "/scoreboard players reset @a points", "titre": "Remettre les points à zéro", "explication": "Tous les points sont effacés.", "mots": ["zéro", "effacer", "points", "score", "recommencer", "remettre"], "categorie": "Classe", "public": "enseignant", "exemple": "/scoreboard players reset @a points", "decouverte": false}, {"id": "c100", "cmd": "/hud @a hide all", "titre": "Cacher l’écran de jeu", "explication": "Les cœurs, la barre d’objets et le reste disparaissent. Pratique pour une photo. Pour annuler : reset à la place de hide.", "mots": ["cacher", "écran", "photo", "interface", "propre", "film"], "categorie": "Classe", "public": "enseignant", "exemple": "/hud @a hide all"}, {"id": "c101", "cmd": "/dialogue open @e[type=npc,c=1] @p", "titre": "Ouvrir le dialogue d’un PNJ", "explication": "Le PNJ le plus proche parle au joueur le plus proche.", "mots": ["PNJ", "dialogue", "parler", "personnage", "ouvrir", "discussion"], "categorie": "PNJ et personnages", "public": "enseignant", "exemple": "/dialogue open @e[type=npc,c=1] @p", "creation": true}, {"id": "c102", "cmd": "/title @a subtitle <texte>", "titre": "Afficher un sous-titre", "explication": "Un petit texte sous le grand titre. Écris-le avant le titre.", "mots": ["sous-titre", "texte", "écran", "titre", "afficher"], "categorie": "Messages", "public": "enseignant", "exemple": "/title @a subtitle Niveau 1", "creation": true}, {"id": "c103", "cmd": "/title @a clear", "titre": "Effacer le titre", "explication": "Le titre disparaît de l’écran.", "mots": ["effacer", "titre", "enlever", "écran", "cacher"], "categorie": "Messages", "public": "enseignant", "exemple": "/title @a clear", "decouverte": false}, {"id": "c104", "cmd": "/playsound <son> @a", "titre": "Jouer un son", "explication": "Tous les joueurs entendent le son.", "mots": ["son", "bruit", "victoire", "bravo", "entendre", "sonnerie"], "categorie": "Effets et ambiance", "public": "enseignant", "exemple": "/playsound random.levelup @a"}, {"id": "c105", "cmd": "/playsound <musique> @a", "titre": "Mettre de la musique", "explication": "La musique d’un disque joue pour tous les joueurs.", "mots": ["musique", "chanson", "disque", "son", "ambiance", "écouter"], "categorie": "Effets et ambiance", "public": "enseignant", "exemple": "/playsound record.cat @a"}, {"id": "c106", "cmd": "/stopsound @a", "titre": "Arrêter les sons", "explication": "Les sons et la musique s’arrêtent.", "mots": ["arrêter", "silence", "son", "musique", "couper", "stop"], "categorie": "Effets et ambiance", "public": "enseignant", "exemple": "/stopsound @a", "decouverte": false}, {"id": "c107", "cmd": "/particle minecraft:<particule> ~ ~2 ~", "titre": "Faire apparaître des particules", "explication": "Des particules apparaissent au-dessus de toi.", "mots": ["cœurs", "amour", "particules", "effet", "joli", "étincelles", "briller", "vert", "magie"], "categorie": "Effets et ambiance", "public": "enseignant", "exemple": "/particle minecraft:heart_particle ~ ~2 ~"}, {"id": "c109", "cmd": "/camerashake add @a 0.5 3", "titre": "Faire trembler l’écran", "explication": "L’écran tremble pendant 3 secondes, comme un tremblement de terre.", "mots": ["trembler", "séisme", "secousse", "écran", "terre", "effet"], "categorie": "Effets et ambiance", "public": "enseignant", "exemple": "/camerashake add @a 0.5 3"}, {"id": "c110", "cmd": "/camera @a fade time 1 2 1 color 0 0 0", "titre": "Faire un écran noir", "explication": "L’écran devient noir, puis revient. Pratique pour changer de scène.", "mots": ["noir", "fondu", "écran", "transition", "scène", "cinéma"], "categorie": "Effets et ambiance", "public": "enseignant", "exemple": "/camera @a fade time 1 2 1 color 0 0 0"}, {"id": "c111", "cmd": "/summon lightning_bolt", "titre": "Faire tomber la foudre", "explication": "Un éclair tombe juste à côté de toi.", "mots": ["foudre", "éclair", "orage", "tonnerre", "effet"], "categorie": "Effets et ambiance", "public": "enseignant", "exemple": "/summon lightning_bolt"}, {"id": "c112", "cmd": "/summon fireworks_rocket", "titre": "Lancer un feu d’artifice", "explication": "Une fusée part dans le ciel.", "mots": ["feu d’artifice", "fête", "fusée", "bravo", "ciel", "célébrer"], "categorie": "Effets et ambiance", "public": "enseignant", "exemple": "/summon fireworks_rocket"}, {"id": "c113", "cmd": "/summon <animal> <nom>", "titre": "Faire apparaître un animal avec un nom", "explication": "L’animal apparaît avec son nom au-dessus de la tête.", "mots": ["nom", "animal", "prénom", "appeler", "créer", "étiquette"], "categorie": "Créatures", "public": "enseignant", "exemple": "/summon cow Marguerite"}, {"id": "c114", "cmd": "/tp @e[type=<animal>] @s", "titre": "Faire venir des animaux", "explication": "Tous les animaux de ce type viennent près de toi.", "mots": ["venir", "animaux", "moutons", "rassembler", "troupeau", "appeler"], "categorie": "Créatures", "public": "enseignant", "exemple": "/tp @e[type=sheep] @s"}, {"id": "c115", "cmd": "/kill @e[type=npc]", "titre": "Enlever les PNJ", "explication": "Tous les PNJ disparaissent. Attention : leurs dialogues aussi.", "mots": ["PNJ", "enlever", "supprimer", "personnage", "effacer"], "categorie": "PNJ et personnages", "public": "enseignant", "exemple": "/kill @e[type=npc]", "decouverte": false}, {"id": "c116", "cmd": "/tag @s add prof", "exemple": "/tag @s add prof", "titre": "Me marquer comme prof", "explication": "Tu reçois l’étiquette « prof ». Ensuite, « Tous les élèves (sauf le prof) » ne te vise plus. À faire en premier.", "mots": ["prof", "enseignant", "moi", "étiquette", "protéger", "sauf"], "categorie": "Classe", "public": "enseignant", "creation": true}, {"id": "c117", "cmd": "/tag <joueur> remove <équipe>", "exemple": "/tag @a remove equipe1", "titre": "Enlever une étiquette", "explication": "Le joueur n’a plus cette étiquette.", "mots": ["étiquette", "enlever", "équipe", "tag"], "categorie": "Classe", "public": "enseignant", "creation": true, "qui": ["@a", "@p", "nom"], "decouverte": false}, {"id": "c118", "cmd": "/spawnpoint <joueur> <x> <y> <z>", "exemple": "/spawnpoint @a ~ ~ ~", "titre": "Choisir le retour de toute la classe", "explication": "Après une mort, les élèves reviennent à cet endroit. ~ ~ ~ = là où tu es.", "mots": ["retour", "mourir", "réapparaître", "classe", "départ", "point"], "categorie": "Se déplacer", "public": "enseignant", "creation": true, "qui": ["@a", "@a[tag=!prof]", "@p", "nom"]}, {"id": "c119", "cmd": "/tp <joueur> <x> <y> <z> facing <x2> <y2> <z2>", "exemple": "/tp @a 0 65 0 facing 0 65 10", "titre": "Téléporter en regardant un endroit", "explication": "Le joueur arrive au bon endroit et regarde dans la bonne direction.", "mots": ["téléporter", "regarder", "direction", "face", "orienter"], "categorie": "Se déplacer", "public": "enseignant", "creation": true, "qui": ["@a", "@a[tag=!prof]", "@s", "@p", "nom"]}, {"id": "c120", "cmd": "/give <joueur> <blocadonner> 16 0 {\"minecraft:can_place_on\":{\"blocks\":[\"<support>\"]}}", "exemple": "/give @a glass 16 0 {\"minecraft:can_place_on\":{\"blocks\":[\"gold_block\"]}}", "titre": "Donner un bloc à poser à un seul endroit", "explication": "En mode aventure, l’élève peut poser ce bloc seulement sur le bloc choisi.", "mots": ["aventure", "poser", "autoriser", "parcours", "énigme"], "categorie": "Objets et inventaire", "public": "enseignant", "creation": true, "qui": ["@a", "@a[tag=!prof]", "@s", "nom"]}, {"id": "c121", "cmd": "/give <joueur> <outil> 1 0 {\"minecraft:can_destroy\":{\"blocks\":[\"<bloc>\"]}}", "exemple": "/give @a iron_pickaxe 1 0 {\"minecraft:can_destroy\":{\"blocks\":[\"stone\"]}}", "titre": "Donner un outil qui casse un seul bloc", "explication": "En mode aventure, l’élève peut casser seulement le bloc choisi.", "mots": ["aventure", "casser", "outil", "pioche", "énigme"], "categorie": "Objets et inventaire", "public": "enseignant", "creation": true, "qui": ["@a", "@a[tag=!prof]", "@s", "nom"]}, {"id": "c122", "cmd": "/give <joueur> <objet> 1 0 {\"minecraft:item_lock\":{\"mode\":\"lock_in_inventory\"}}", "exemple": "/give @a book 1 0 {\"minecraft:item_lock\":{\"mode\":\"lock_in_inventory\"}}", "titre": "Donner un objet qu’on ne peut pas jeter", "explication": "L’objet reste dans l’inventaire. L’élève ne peut pas le jeter.", "mots": ["verrouiller", "garder", "jeter", "bloquer", "objet"], "categorie": "Objets et inventaire", "public": "enseignant", "creation": true, "qui": ["@a", "@a[tag=!prof]", "@s", "nom"]}, {"id": "c123", "cmd": "/replaceitem entity <joueur> slot.hotbar <case> <objet> 1 0 {\"minecraft:item_lock\":{\"mode\":\"lock_in_slot\"}}", "exemple": "/replaceitem entity @a slot.hotbar 0 compass 1 0 {\"minecraft:item_lock\":{\"mode\":\"lock_in_slot\"}}", "titre": "Bloquer un objet dans une case", "explication": "L’objet est mis dans la case choisie. Il ne peut plus bouger.", "mots": ["case", "barre", "verrouiller", "bloquer", "objet"], "categorie": "Objets et inventaire", "public": "enseignant", "creation": true, "qui": ["@a", "@a[tag=!prof]", "@s", "nom"]}, {"id": "c124", "cmd": "/give <joueur> <objet> 1 0 {\"minecraft:keep_on_death\":{}}", "exemple": "/give @a empty_map 1 0 {\"minecraft:keep_on_death\":{}}", "titre": "Donner un objet gardé après la mort", "explication": "Si l’élève meurt, il garde cet objet.", "mots": ["mort", "garder", "mourir", "objet"], "categorie": "Objets et inventaire", "public": "enseignant", "creation": true, "qui": ["@a", "@a[tag=!prof]", "@s", "nom"]}, {"id": "c125", "cmd": "/replaceitem block <x> <y> <z> slot.container <case> <objet> <nombre>", "exemple": "/replaceitem block 10 64 5 slot.container 0 diamond 3", "titre": "Remplir un coffre", "explication": "Des objets vont dans le coffre posé à cette position.", "mots": ["coffre", "remplir", "trésor", "ranger", "récompense"], "categorie": "Objets et inventaire", "public": "enseignant", "creation": true}, {"id": "c126", "cmd": "/title @a times 10 100 20", "exemple": "/title @a times 10 100 20", "titre": "Régler la durée du titre", "explication": "Le titre reste 5 secondes. À faire avant le titre. (20 = 1 seconde.)", "mots": ["durée", "titre", "temps", "secondes", "longtemps"], "categorie": "Messages", "public": "enseignant", "creation": true, "decouverte": false}, {"id": "c127", "cmd": "/tellraw <joueur> {\"rawtext\":[{\"text\":\"<message>\"}]}", "exemple": "/tellraw @a {\"rawtext\":[{\"text\":\"Bienvenue dans le labo !\"}]}", "titre": "Écrire un message sans nom", "explication": "Le message s’affiche dans le chat, sans le nom de celui qui écrit.", "mots": ["message", "chat", "annonce", "narrateur", "histoire"], "categorie": "Messages", "public": "enseignant", "creation": true, "qui": ["@a", "@a[tag=!prof]", "@p", "nom"]}, {"id": "c128", "cmd": "/setblock ~ ~ ~1 command_block", "exemple": "/setblock ~ ~ ~1 command_block", "titre": "Poser un bloc de commande", "explication": "Un bloc de commande apparaît devant toi. Il lance une commande avec un bouton ou un levier.", "mots": ["bloc de commande", "automatique", "bouton", "levier", "redstone"], "categorie": "Construire", "public": "enseignant", "creation": true}, {"id": "c129", "cmd": "/gamerule commandblocksenabled true", "exemple": "/gamerule commandblocksenabled true", "titre": "Activer les blocs de commande", "explication": "Les blocs de commande peuvent fonctionner. Pour annuler : false à la place de true.", "mots": ["bloc de commande", "activer", "marcher"], "categorie": "Monde et règles", "public": "enseignant", "creation": true, "decouverte": false}, {"id": "c130", "cmd": "/gamerule commandblockoutput false", "exemple": "/gamerule commandblockoutput false", "titre": "Cacher les messages des blocs de commande", "explication": "Le chat n’est plus rempli par les blocs de commande. Pour annuler : true à la place de false.", "mots": ["bloc de commande", "chat", "cacher", "messages"], "categorie": "Monde et règles", "public": "enseignant", "creation": true, "decouverte": false}, {"id": "c131", "cmd": "/function <fonction>", "exemple": "/function labo/reinitialiser", "titre": "Lancer une fonction", "explication": "Lance une liste de commandes rangée dans le monde. Exemple : remettre un jeu à zéro.", "mots": ["fonction", "réinitialiser", "recommencer", "lancer"], "categorie": "Monde et règles", "public": "enseignant", "creation": true, "decouverte": false}, {"id": "c132", "cmd": "/fill ~-10 ~-1 ~3 ~10 ~-1 ~3 border_block", "exemple": "/fill ~-10 ~-1 ~3 ~10 ~-1 ~3 border_block", "titre": "Poser une bordure devant toi", "explication": "Une ligne de blocs Bordure apparaît dans le sol, devant toi. Personne ne peut la traverser, jusqu’au ciel.", "mots": ["bordure", "frontière", "limite", "mur", "zone"], "categorie": "Construire", "public": "enseignant", "creation": true, "education": true}, {"id": "c133", "cmd": "/camera <joueur> set minecraft:free pos <x> <y> <z> facing <x2> <y2> <z2>", "exemple": "/camera @a set minecraft:free pos 0 80 0 facing 0 64 20", "titre": "Montrer un lieu avec la caméra", "explication": "La caméra se place à la position choisie et regarde un endroit. Le joueur ne bouge pas.", "mots": ["caméra", "vue", "film", "montrer", "cinéma", "présenter"], "categorie": "Effets et ambiance", "public": "enseignant", "creation": true, "qui": ["@a", "@a[tag=!prof]", "@s", "nom"]}, {"id": "c134", "cmd": "/camera <joueur> clear", "exemple": "/camera @a clear", "titre": "Remettre la caméra normale", "explication": "La vue revient dans les yeux du joueur.", "mots": ["caméra", "normal", "vue", "remettre"], "categorie": "Effets et ambiance", "public": "enseignant", "creation": true, "qui": ["@a", "@a[tag=!prof]", "@s", "nom"], "decouverte": false}, {"id": "c135", "cmd": "/give <joueur> element_<element>", "exemple": "/give @s element_6", "titre": "Recevoir un élément chimique", "explication": "Le numéro est celui du tableau périodique. 6 = carbone, 8 = oxygène.", "mots": ["chimie", "élément", "atome", "tableau périodique", "science"], "categorie": "Objets et inventaire", "public": "enseignant", "creation": false, "education": true, "qui": ["@s", "@a", "nom"]}, {"id": "c136", "cmd": "/give <joueur> <chimie>", "exemple": "/give @s compound_creator", "titre": "Recevoir une table de chimie", "explication": "Une table pour faire de la chimie dans Minecraft Education.", "mots": ["chimie", "table", "laboratoire", "science"], "categorie": "Objets et inventaire", "public": "enseignant", "creation": false, "education": true, "qui": ["@s", "@a", "nom"]}, {"id": "c137", "cmd": "/summon npc ~ ~ ~2 <angle> 0 minecraft:entity_spawned \"<nompnj>\"", "exemple": "/summon npc ~ ~ ~2 180 0 minecraft:entity_spawned \"Robot\"", "titre": "Faire apparaître un PNJ avec un nom", "explication": "Un personnage apparaît devant toi, avec son nom. Ses paroles s’écrivent ensuite à la main (clic droit sur lui).", "mots": ["PNJ", "personnage", "nom", "créer", "guide", "parler"], "categorie": "PNJ et personnages", "public": "enseignant", "creation": true, "education": true}, {"id": "c138", "cmd": "/tp @e[type=npc,name=\"<nompnj>\"] <x> <y> <z>", "exemple": "/tp @e[type=npc,name=\"Robot\"] 10 65 20", "titre": "Déplacer un PNJ", "explication": "Le PNJ qui a ce nom va à cet endroit.", "mots": ["PNJ", "déplacer", "bouger", "téléporter"], "categorie": "PNJ et personnages", "public": "enseignant", "creation": true}, {"id": "c139", "cmd": "/tp @e[type=npc,name=\"<nompnj>\"] @s", "exemple": "/tp @e[type=npc,name=\"Robot\"] @s", "titre": "Faire venir un PNJ", "explication": "Le PNJ qui a ce nom vient à côté de toi.", "mots": ["PNJ", "venir", "appeler", "ici"], "categorie": "PNJ et personnages", "public": "enseignant", "creation": true}, {"id": "c140", "cmd": "/tp @a @e[type=npc,name=\"<nompnj>\",c=1]", "exemple": "/tp @a @e[type=npc,name=\"Robot\",c=1]", "titre": "Réunir la classe près d’un PNJ", "explication": "Tous les joueurs vont à côté du PNJ.", "mots": ["PNJ", "réunir", "classe", "rassembler"], "categorie": "PNJ et personnages", "public": "enseignant", "creation": true}, {"id": "c141", "cmd": "/kill @e[type=npc,name=\"<nompnj>\"]", "exemple": "/kill @e[type=npc,name=\"Robot\"]", "titre": "Enlever un seul PNJ", "explication": "Seul le PNJ qui a ce nom disparaît. Les autres restent.", "mots": ["PNJ", "enlever", "supprimer", "effacer"], "categorie": "PNJ et personnages", "public": "enseignant", "creation": true}, {"id": "c142", "cmd": "/tp @e[type=npc,name=\"<nompnj>\"] ~ ~-3 ~", "exemple": "/tp @e[type=npc,name=\"Robot\"] ~ ~-3 ~", "titre": "Cacher un PNJ sous le sol", "explication": "Le PNJ est caché sous tes pieds. Il peut encore parler avec « Montrer le message d’un PNJ ».", "mots": ["PNJ", "cacher", "narrateur", "invisible", "sol"], "categorie": "PNJ et personnages", "public": "enseignant", "creation": true}, {"id": "c143", "cmd": "/dialogue open @e[type=npc,name=\"<nompnj>\"] <joueur>", "exemple": "/dialogue open @e[type=npc,name=\"Robot\"] @a", "titre": "Montrer le message d’un PNJ", "explication": "La fenêtre du PNJ s’ouvre, sans cliquer sur lui.", "mots": ["PNJ", "message", "dialogue", "ouvrir", "parler", "histoire"], "categorie": "PNJ et personnages", "public": "enseignant", "creation": true, "qui": ["@a", "@a[tag=!prof]", "@p", "nom"]}, {"id": "c144", "cmd": "/tag @e[type=npc,name=\"<nompnj>\"] add <équipe>", "exemple": "/tag @e[type=npc,name=\"Robot\"] add guide", "titre": "Donner une étiquette à un PNJ", "explication": "Le PNJ reçoit une étiquette. Pratique pour le retrouver dans d’autres commandes.", "mots": ["PNJ", "étiquette", "tag"], "categorie": "PNJ et personnages", "public": "enseignant", "creation": true}, {"id": "c145", "cmd": "/tp @initiator <x> <y> <z>", "exemple": "/tp @initiator 100 65 100", "titre": "Téléporter l’élève qui clique sur un PNJ", "explication": "À coller dans un bouton du PNJ (réglages avancés). Seul l’élève qui clique part.", "mots": ["PNJ", "bouton", "téléporter", "cliquer", "portail"], "categorie": "PNJ et personnages", "public": "enseignant", "creation": true}, {"id": "c146", "cmd": "/give @initiator <objet> <nombre>", "exemple": "/give @initiator diamond 1", "titre": "Récompenser l’élève qui clique sur un PNJ", "explication": "À coller dans un bouton du PNJ (réglages avancés). L’élève qui clique reçoit l’objet.", "mots": ["PNJ", "bouton", "récompense", "cadeau", "donner"], "categorie": "PNJ et personnages", "public": "enseignant", "creation": true}, {"id": "c147", "cmd": "/summon villager ~ ~ ~2 0 0 minecraft:spawn_<metier> \"<nompnj>\"", "exemple": "/summon villager ~ ~ ~2 0 0 minecraft:spawn_librarian \"Léa\"", "titre": "Faire apparaître un villageois avec un métier", "explication": "Un villageois apparaît avec son métier et son nom.", "mots": ["villageois", "métier", "habitant", "village", "personnage"], "categorie": "PNJ et personnages", "public": "enseignant", "creation": true}, {"id": "c148", "cmd": "/event entity @e[type=villager_v2,c=1] minecraft:<devenir>", "exemple": "/event entity @e[type=villager_v2,c=1] minecraft:become_fisherman", "titre": "Changer le métier d’un villageois", "explication": "Le villageois le plus proche prend ce métier.", "mots": ["villageois", "métier", "changer"], "categorie": "PNJ et personnages", "public": "enseignant", "creation": true}, {"id": "c149", "cmd": "/summon armor_stand \"<nompnj>\" ~ ~ ~2", "exemple": "/summon armor_stand \"Chevalier\" ~ ~ ~2", "titre": "Poser un mannequin", "explication": "Un porte-armure apparaît devant toi. On peut l’habiller pour un musée ou un décor.", "mots": ["mannequin", "porte-armure", "musée", "statue", "décor"], "categorie": "PNJ et personnages", "public": "enseignant", "creation": true}, {"id": "c150", "cmd": "/replaceitem entity @e[type=armor_stand,c=1] <tenue>", "exemple": "/replaceitem entity @e[type=armor_stand,c=1] slot.armor.head 0 golden_helmet", "titre": "Habiller un mannequin", "explication": "Le mannequin le plus proche reçoit cet habit.", "mots": ["mannequin", "habiller", "armure", "casque", "costume"], "categorie": "PNJ et personnages", "public": "enseignant", "creation": true}, {"id": "c151", "cmd": "/replaceitem entity @e[type=armor_stand,c=1] slot.weapon.mainhand 0 <objet>", "exemple": "/replaceitem entity @e[type=armor_stand,c=1] slot.weapon.mainhand 0 book", "titre": "Mettre un objet dans la main d’un mannequin", "explication": "Le mannequin le plus proche tient l’objet.", "mots": ["mannequin", "main", "tenir", "objet"], "categorie": "PNJ et personnages", "public": "enseignant", "creation": true}, {"id": "c152", "cmd": "/give @s <oeuf> 5", "exemple": "/give @s cow_spawn_egg 5", "titre": "Recevoir des œufs d’animaux", "explication": "Pose l’œuf par terre : l’animal apparaît.", "mots": ["œuf", "oeuf", "apparition", "animal", "poser"], "categorie": "Créatures", "public": "enseignant", "creation": true}, {"id": "c153", "cmd": "/summon <animal> ~ ~ ~2 0 0 minecraft:entity_born \"<nompnj>\"", "exemple": "/summon cow ~ ~ ~2 0 0 minecraft:entity_born \"Petit veau\"", "titre": "Faire apparaître un bébé animal", "explication": "Un bébé animal apparaît, avec un nom. Il grandira avec le temps.", "mots": ["bébé", "petit", "animal", "naissance"], "categorie": "Créatures", "public": "enseignant", "creation": true}, {"id": "c154", "cmd": "/effect @e[type=<animal>] slowness infinite 255 true", "exemple": "/effect @e[type=cow] slowness infinite 255 true", "titre": "Immobiliser des créatures", "explication": "Les créatures de ce type ne bougent plus. Pratique pour un zoo ou un village.", "mots": ["immobiliser", "bouger", "figer", "zoo", "statue"], "categorie": "Créatures", "public": "enseignant", "creation": true}, {"id": "c155", "cmd": "/ride <joueur> start_riding @e[type=<monture>,c=1]", "exemple": "/ride @p start_riding @e[type=horse,c=1]", "titre": "Monter sur une créature", "explication": "Le joueur s’assoit sur la créature la plus proche.", "mots": ["monter", "cheval", "chevaucher", "monture", "balade"], "categorie": "Se déplacer", "public": "enseignant", "creation": true, "qui": ["@p", "@s", "nom"]}, {"id": "c156", "cmd": "/ride <joueur> summon_ride <monture>", "exemple": "/ride @p summon_ride horse", "titre": "Faire apparaître une monture", "explication": "Une monture apparaît sous le joueur. Il est assis dessus.", "mots": ["monture", "cheval", "monter", "balade"], "categorie": "Se déplacer", "public": "enseignant", "creation": true, "qui": ["@p", "@s", "nom"]}, {"id": "c157", "cmd": "/ride <joueur> stop_riding", "exemple": "/ride @a stop_riding", "titre": "Faire descendre de sa monture", "explication": "Les joueurs descendent de leur monture.", "mots": ["descendre", "monture", "cheval"], "categorie": "Se déplacer", "public": "enseignant", "creation": true, "decouverte": false, "qui": ["@a", "@p", "nom"]}, {"id": "c158", "cmd": "/give @s name_tag 3", "exemple": "/give @s name_tag 3", "titre": "Recevoir des étiquettes de nom", "explication": "Écris un nom sur l’étiquette avec une enclume, puis donne-la à un animal.", "mots": ["étiquette", "nom", "animal", "enclume"], "categorie": "Objets et inventaire", "public": "enseignant", "creation": false}, {"id": "c159", "cmd": "/give @s lead 2", "exemple": "/give @s lead 2", "titre": "Recevoir des laisses", "explication": "Attache un animal pour le promener.", "mots": ["laisse", "attacher", "animal", "promener"], "categorie": "Objets et inventaire", "public": "enseignant", "creation": false}, {"id": "c160", "cmd": "/give @s frame 5", "exemple": "/give @s frame 5", "titre": "Recevoir des cadres", "explication": "Accroche un cadre au mur et mets un objet dedans. Pratique pour un musée.", "mots": ["cadre", "mur", "musée", "exposer"], "categorie": "Objets et inventaire", "public": "enseignant", "creation": true}, {"id": "c161", "cmd": "/setblock ~ ~ ~1 standing_sign", "exemple": "/setblock ~ ~ ~1 standing_sign", "titre": "Poser un panneau", "explication": "Un panneau en bois apparaît devant toi. Le texte s’écrit à la main.", "mots": ["panneau", "écrire", "texte", "indication", "pancarte"], "categorie": "Construire", "public": "enseignant", "creation": true}, {"id": "c162", "cmd": "/setblock ~ ~ ~1 lectern", "exemple": "/setblock ~ ~ ~1 lectern", "titre": "Poser un pupitre", "explication": "Un pupitre apparaît devant toi. Pose un livre dessus à la main.", "mots": ["pupitre", "livre", "lire", "histoire"], "categorie": "Construire", "public": "enseignant", "creation": true}, {"id": "c163", "cmd": "/fill ~-4 ~ ~-4 ~4 ~4 ~4 <bloc> outline", "exemple": "/fill ~-4 ~ ~-4 ~4 ~4 ~4 stone outline", "titre": "Construire une boîte fermée", "explication": "Seuls les bords sont construits. L’intérieur ne change pas.", "mots": ["boîte", "bords", "murs", "enclos", "contour"], "categorie": "Construire", "public": "enseignant", "creation": true}, {"id": "c164", "cmd": "/fill ~-5 ~-1 ~-5 ~5 ~-1 ~5 <bloc> keep", "exemple": "/fill ~-5 ~-1 ~-5 ~5 ~-1 ~5 water keep", "titre": "Remplir seulement le vide", "explication": "Le bloc remplace seulement l’air. Les autres blocs restent.", "mots": ["remplir", "vide", "trous", "air", "boucher"], "categorie": "Construire", "public": "enseignant", "creation": true}, {"id": "c165", "cmd": "/clone <ax> <ay> <az> <bx> <by> <bz> ~ ~ ~ replace move", "exemple": "/clone 0 64 0 10 70 10 ~ ~ ~ replace move", "titre": "Déplacer une construction", "explication": "La construction vient là où tu es. L’ancienne place devient vide. Les deux premières positions sont deux coins opposés.", "mots": ["déplacer", "bouger", "construction", "bâtiment"], "categorie": "Construire", "public": "enseignant", "creation": true}, {"id": "c166", "cmd": "/structure load <nom> ~ ~ ~ <rotation>", "exemple": "/structure load maison ~ ~ ~ 90_degrees", "titre": "Recharger une construction tournée", "explication": "La construction enregistrée apparaît ici, tournée.", "mots": ["tourner", "rotation", "construction", "structure"], "categorie": "Construire", "public": "enseignant", "creation": true}, {"id": "c167", "cmd": "/structure load <nom> ~ ~ ~ 0_degrees none block_by_block 10", "exemple": "/structure load maison ~ ~ ~ 0_degrees none block_by_block 10", "titre": "Construire bloc par bloc", "explication": "La construction enregistrée apparaît petit à petit, en 10 secondes, comme une animation.", "mots": ["animation", "petit à petit", "construction", "magie", "spectacle"], "categorie": "Construire", "public": "enseignant", "creation": true}, {"id": "c168", "cmd": "/execute as @a at @s if block ~ ~-1 ~ <bloc> run tp @s <x> <y> <z>", "exemple": "/execute as @a at @s if block ~ ~-1 ~ gold_block run tp @s 0 70 0", "titre": "Faire un téléporteur", "explication": "Le joueur debout sur ce bloc part à la position choisie. À mettre dans un bloc de commande « Répéter », toujours actif.", "mots": ["téléporteur", "portail", "bloc de commande", "passage"], "categorie": "Se déplacer", "public": "enseignant", "creation": true}, {"id": "c169", "cmd": "/scoreboard players set <joueur> points <valeur>", "exemple": "/scoreboard players set @a points 0", "titre": "Régler les points", "explication": "Le compteur « points » prend ce nombre. Crée d’abord le compteur.", "mots": ["points", "score", "régler", "mettre", "compteur"], "categorie": "Classe", "public": "enseignant", "creation": true, "qui": ["@a", "@a[tag=!prof]", "@p", "nom"]}, {"id": "c170", "cmd": "/scoreboard players remove <joueur> points 1", "exemple": "/scoreboard players remove @p points 1", "titre": "Enlever un point", "explication": "Le joueur perd un point.", "mots": ["enlever", "point", "perdre", "score"], "categorie": "Classe", "public": "enseignant", "creation": true, "qui": ["@p", "@a", "nom"]}, {"id": "c171", "cmd": "/scoreboard objectives setdisplay belowname points", "exemple": "/scoreboard objectives setdisplay belowname points", "titre": "Afficher les points sous le nom", "explication": "Les points de chaque joueur s’affichent sous son nom.", "mots": ["points", "nom", "afficher", "score"], "categorie": "Classe", "public": "enseignant", "creation": true}, {"id": "c172", "cmd": "/titleraw <joueur> actionbar {\"rawtext\":[{\"text\":\"Points : \"},{\"score\":{\"name\":\"*\",\"objective\":\"points\"}}]}", "exemple": "/titleraw @a actionbar {\"rawtext\":[{\"text\":\"Points : \"},{\"score\":{\"name\":\"*\",\"objective\":\"points\"}}]}", "titre": "Afficher ses points à l’écran", "explication": "Chaque joueur voit ses propres points en bas de l’écran.", "mots": ["points", "score", "afficher", "écran"], "categorie": "Messages", "public": "enseignant", "creation": true, "qui": ["@a", "@a[tag=!prof]"]}];
+const COMMANDES=TOUTES.filter(c=>c.verifiee!==false);   /* non vérifiées : cachées */
+/* Listes de choix : {label, options:[[valeur, libellé, explication, mots-clés]]} */
+const LISTES={"moment": {"label": "Moment", "options": [["day", "Jour", "Le soleil se lève. Il fait jour.", ["jour", "matin", "clair", "lumière"]], ["noon", "Midi", "Le soleil est tout en haut.", ["midi", "journée"]], ["sunset", "Coucher du soleil", "Le ciel devient orange.", ["soir", "coucher", "orange"]], ["night", "Nuit", "Il fait nuit. Les monstres sortent.", ["nuit", "soir", "noir", "lune", "étoiles"]], ["midnight", "Minuit", "Le milieu de la nuit.", ["minuit", "lune"]], ["sunrise", "Lever du soleil", "Le soleil se lève.", ["aube", "lever", "matin"]]]}, "meteo": {"label": "Météo", "options": [["clear", "Beau temps", "La pluie s’arrête. Le ciel est bleu.", ["beau", "soleil", "ciel", "arrêter"]], ["rain", "Pluie", "Il pleut. En montagne, il neige.", ["pluie", "pleuvoir", "neige", "nuages"]], ["thunder", "Orage", "Il y a de l’orage. La foudre peut tomber.", ["orage", "éclair", "foudre", "tonnerre", "tempête"]]]}, "mode": {"label": "Mode de jeu", "options": [["creative", "Créatif", "Tu as tous les blocs. Tu peux voler. Tu ne meurs pas.", ["créatif", "voler", "construire", "gratuit"]], ["survival", "Survie", "Tu dois manger et te protéger. Tu peux mourir.", ["survie", "manger", "vie", "danger"]], ["adventure", "Aventure", "Tu ne peux pas casser les blocs. Tu peux utiliser les boutons et les portes.", ["aventure", "explorer", "parcours", "protéger"]], ["spectator", "Spectateur", "Tu regardes sans toucher. Tu passes à travers les murs.", ["spectateur", "regarder", "observer", "fantôme", "murs"]]]}, "niveau": {"label": "Difficulté", "options": [["peaceful", "Paisible", "Pas de monstres. Le monde est calme.", ["paisible", "calme", "paix"]], ["easy", "Facile", "Peu de monstres. Ils font peu de dégâts.", ["facile", "simple"]], ["normal", "Normal", "Les monstres sont normaux.", ["normal", "moyen"]], ["hard", "Difficile", "Les monstres sont forts.", ["difficile", "dur"]]]}, "effet": {"label": "Effet", "options": [["night_vision", "Vision nocturne", "Tu vois bien, même la nuit ou dans une grotte.", ["voir", "noir", "nuit", "vision", "grotte"]], ["speed", "Vitesse", "Tu cours plus vite.", ["vite", "courir", "rapide", "vitesse"]], ["water_breathing", "Respiration aquatique", "Tu peux rester sous l’eau sans te noyer.", ["eau", "respirer", "nager", "plonger", "mer", "noyer"]], ["invisibility", "Invisibilité", "Les autres ne te voient plus.", ["invisible", "cacher", "disparaître", "fantôme"]], ["jump_boost", "Saut amélioré", "Tu sautes très haut.", ["sauter", "saut", "haut", "bondir"]], ["slow_falling", "Chute lente", "Tu tombes lentement, comme une plume.", ["tomber", "doucement", "plume", "chute", "planer"]], ["regeneration", "Régénération", "Ta vie remonte vite.", ["soigner", "vie", "cœurs", "guérir", "santé"]], ["saturation", "Saturation", "Ta barre de faim se remplit.", ["faim", "manger", "nourriture"]], ["fire_resistance", "Résistance au feu", "Le feu et la lave ne te font pas mal.", ["feu", "lave", "brûler", "protéger"]], ["strength", "Force", "Tes coups font plus mal.", ["force", "fort", "taper", "combat"]], ["haste", "Célérité", "Tu casses les blocs plus vite.", ["creuser", "miner", "casser", "rapide"]], ["levitation", "Lévitation", "Tu montes dans les airs.", ["flotter", "monter", "léviter", "air"]], ["slowness", "Lenteur", "Tu marches lentement.", ["lent", "lenteur", "ralentir"]], ["blindness", "Cécité", "Tu ne vois presque plus rien.", ["aveugle", "noir", "cécité"]]]}, "enchantement": {"label": "Enchantement", "options": [["efficiency 5", "Efficacité V (outil)", "L’outil casse les blocs très vite.", ["efficacité", "rapide", "outil", "pioche"]], ["unbreaking 3", "Solidité III", "L’objet s’use moins vite.", ["solide", "casser", "user", "durer"]], ["sharpness 5", "Tranchant V (épée)", "L’épée fait plus de dégâts.", ["épée", "tranchant", "combat", "fort"]], ["fortune 3", "Fortune III (outil)", "Les minerais donnent plus d’objets.", ["fortune", "minerai", "plus", "diamant"]], ["silk_touch 1", "Toucher de soie (outil)", "Le bloc cassé tombe tel quel.", ["soie", "toucher", "bloc", "ramasser"]], ["protection 4", "Protection IV (armure)", "L’armure protège mieux.", ["protection", "armure", "protéger"]], ["feather_falling 4", "Chute amortie IV (bottes)", "Tomber fait moins mal.", ["chute", "tomber", "bottes", "plume"]], ["respiration 3", "Apnée III (casque)", "Tu respires plus longtemps sous l’eau.", ["eau", "respirer", "casque", "apnée"]], ["power 5", "Puissance V (arc)", "Les flèches font plus de dégâts.", ["arc", "flèche", "puissance"]], ["mending 1", "Raccommodage", "L’objet se répare avec l’expérience.", ["réparer", "raccommodage", "xp"]]]}, "animal": {"label": "Animal", "options": [["cow", "Vache", "", ["vache", "lait", "ferme"]], ["sheep", "Mouton", "", ["mouton", "laine", "ferme"]], ["pig", "Cochon", "", ["cochon", "porc", "ferme"]], ["chicken", "Poule", "", ["poule", "œuf", "ferme"]], ["horse", "Cheval", "", ["cheval", "monter"]], ["donkey", "Âne", "", ["âne"]], ["cat", "Chat", "", ["chat"]], ["wolf", "Loup", "", ["loup", "chien"]], ["rabbit", "Lapin", "", ["lapin"]], ["fox", "Renard", "", ["renard"]], ["panda", "Panda", "", ["panda"]], ["bee", "Abeille", "", ["abeille", "miel"]], ["parrot", "Perroquet", "", ["perroquet", "oiseau"]], ["turtle", "Tortue", "", ["tortue"]], ["axolotl", "Axolotl", "", ["axolotl"]], ["dolphin", "Dauphin", "", ["dauphin", "mer"]], ["polar_bear", "Ours polaire", "", ["ours"]], ["llama", "Lama", "", ["lama"]], ["camel", "Dromadaire", "", ["dromadaire", "chameau"]], ["villager", "Villageois", "", ["villageois", "habitant"]]]}, "monstre": {"label": "Monstre", "options": [["zombie", "Zombies", "", ["zombie", "zombi"]], ["skeleton", "Squelettes", "", ["squelette"]], ["creeper", "Creepers", "", ["creeper", "explosion"]], ["spider", "Araignées", "", ["araignée"]], ["enderman", "Endermen", "", ["enderman"]], ["witch", "Sorcières", "", ["sorcière"]], ["slime", "Slimes", "", ["slime"]], ["phantom", "Phantoms", "", ["phantom"]], ["drowned", "Noyés", "", ["noyé"]]]}, "objet": {"label": "Objet", "options": [["diamond", "Diamant", "", ["diamant"]], ["emerald", "Émeraude", "", ["émeraude"]], ["gold_ingot", "Lingot d’or", "", ["or", "lingot"]], ["iron_ingot", "Lingot de fer", "", ["fer", "lingot"]], ["diamond_sword", "Épée en diamant", "", ["épée", "arme"]], ["diamond_pickaxe", "Pioche en diamant", "", ["pioche", "creuser", "miner"]], ["diamond_axe", "Hache en diamant", "", ["hache", "bois"]], ["diamond_shovel", "Pelle en diamant", "", ["pelle"]], ["bow", "Arc", "", ["arc"]], ["arrow", "Flèche", "", ["flèche"]], ["shield", "Bouclier", "", ["bouclier"]], ["diamond_chestplate", "Plastron en diamant", "", ["armure", "plastron"]], ["apple", "Pomme", "", ["pomme", "manger"]], ["bread", "Pain", "", ["pain", "manger"]], ["cooked_beef", "Steak", "", ["steak", "viande", "manger"]], ["golden_apple", "Pomme dorée", "", ["pomme", "dorée"]], ["torch", "Torche", "", ["torche", "lumière"]], ["lantern", "Lanterne", "", ["lanterne", "lumière"]], ["oak_planks", "Planches de chêne", "", ["planches", "bois"]], ["glass", "Verre", "", ["verre", "fenêtre"]], ["stone", "Pierre", "", ["pierre"]], ["brick_block", "Briques", "", ["briques"]], ["wooden_door", "Porte en chêne", "", ["porte"]], ["bed", "Lit", "", ["lit", "dormir"]], ["book", "Livre", "", ["livre"]], ["empty_map", "Carte vide", "", ["carte"]], ["compass", "Boussole", "", ["boussole"]], ["clock", "Horloge", "", ["horloge", "heure"]], ["spyglass", "Longue-vue", "", ["longue-vue"]], ["water_bucket", "Seau d’eau", "", ["seau", "eau"]], ["oak_sapling", "Pousse de chêne", "", ["pousse", "arbre", "planter"]], ["wheat_seeds", "Graines de blé", "", ["graines", "planter", "blé"]], ["bone_meal", "Poudre d’os", "", ["engrais", "poudre", "os"]], ["elytra", "Élytres", "", ["élytres", "ailes", "planer"]], ["firework_rocket", "Fusée de feu d’artifice", "", ["fusée", "feu d’artifice"]], ["saddle", "Selle", "", ["selle", "cheval"]], ["lead", "Laisse", "", ["laisse"]], ["name_tag", "Étiquette", "", ["étiquette", "nom"]]]}, "bloc": {"label": "Bloc", "options": [["stone", "Pierre", "", ["pierre"]], ["grass_block", "Bloc d’herbe", "", ["herbe", "pelouse"]], ["dirt", "Terre", "", ["terre"]], ["sand", "Sable", "", ["sable", "plage"]], ["oak_planks", "Planches de chêne", "", ["planches", "bois"]], ["stone_bricks", "Briques de pierre", "", ["briques", "pierre", "château"]], ["brick_block", "Briques", "", ["briques"]], ["sandstone", "Grès", "", ["grès"]], ["glass", "Verre", "", ["verre", "fenêtre"]], ["white_wool", "Laine blanche", "", ["laine"]], ["white_concrete", "Béton blanc", "", ["béton"]], ["quartz_block", "Bloc de quartz", "", ["quartz"]], ["snow", "Neige", "", ["neige"]], ["ice", "Glace", "", ["glace"]], ["water", "Eau", "", ["eau", "piscine"]], ["sea_lantern", "Lanterne aquatique", "", ["lumière", "lanterne"]], ["gold_block", "Bloc d’or", "", ["or"]]]}, "blocspecial": {"label": "Bloc spécial", "options": [["border_block", "Frontière (Education)", "Personne ne peut passer à travers ni au-dessus.", ["frontière", "limite", "bordure"]], ["allow", "Autoriser (Education)", "Au-dessus de ce bloc, les élèves peuvent construire.", ["autoriser", "permettre"]], ["deny", "Refuser (Education)", "Au-dessus de ce bloc, personne ne peut construire.", ["refuser", "interdire"]], ["barrier", "Barrière invisible", "Un mur invisible que personne ne traverse.", ["invisible", "barrière", "mur"]], ["light_block_15", "Bloc de lumière", "Il éclaire, mais on ne le voit pas.", ["lumière", "éclairer", "lampe"]]]}, "structure": {"label": "Lieu", "options": [["village", "Village", "", ["village", "maisons", "villageois"]], ["pillager_outpost", "Avant-poste de pillards", "", ["avant-poste", "pillards", "tour"]], ["mansion", "Manoir des bois", "", ["manoir", "château"]], ["monument", "Monument océanique", "", ["monument", "océan", "mer"]], ["shipwreck", "Épave", "", ["épave", "bateau"]], ["buried_treasure", "Trésor enfoui", "", ["trésor", "coffre"]], ["ruins", "Ruines sous-marines", "", ["ruines", "mer"]], ["temple", "Temple (désert ou jungle)", "", ["temple", "pyramide"]], ["mineshaft", "Mine abandonnée", "", ["mine", "galeries"]], ["stronghold", "Fort", "", ["fort", "portail", "end"]], ["ruined_portal", "Portail en ruine", "", ["portail", "ruine"]], ["ancient_city", "Cité antique", "", ["cité", "warden"]], ["trail_ruins", "Ruines des sentiers", "", ["ruines", "archéologie"]], ["trial_chambers", "Chambres des épreuves", "", ["épreuves", "chambres"]]]}, "paysage": {"label": "Paysage", "options": [["desert", "Désert", "", ["désert", "sable"]], ["plains", "Plaines", "", ["plaines", "herbe"]], ["forest", "Forêt", "", ["forêt", "arbres"]], ["birch_forest", "Forêt de bouleaux", "", ["bouleaux"]], ["flower_forest", "Forêt fleurie", "", ["fleurs"]], ["cherry_grove", "Cerisaie", "", ["cerisier", "rose"]], ["jungle", "Jungle", "", ["jungle"]], ["bamboo_jungle", "Jungle de bambous", "", ["bambous", "panda"]], ["savanna", "Savane", "", ["savane"]], ["mesa", "Badlands", "", ["badlands", "canyon"]], ["swampland", "Marais", "", ["marais"]], ["mangrove_swamp", "Marais de mangroves", "", ["mangroves"]], ["mushroom_island", "Champs de champignons", "", ["champignons"]], ["ice_plains", "Plaines enneigées", "", ["neige", "glace", "froid"]], ["meadow", "Prairie", "", ["prairie"]], ["lush_caves", "Grottes luxuriantes", "", ["grotte"]], ["ocean", "Océan", "", ["océan", "mer"]]]}, "son": {"label": "Son", "options": [["random.levelup", "Victoire", "", ["victoire", "bravo"]], ["random.orb", "Ding", "", ["ding"]], ["note.bell", "Cloche", "", ["cloche", "sonnerie"]], ["note.pling", "Note de musique", "", ["note"]], ["firework.launch", "Feu d’artifice", "", ["fusée", "fête"]], ["ambient.weather.thunder", "Tonnerre", "", ["tonnerre", "orage"]], ["random.explode", "Explosion", "", ["explosion", "boum"]], ["mob.cat.meow", "Miaou", "", ["chat", "miaou"]], ["mob.villager.yes", "Villageois content", "", ["villageois"]], ["random.anvil_land", "Enclume", "", ["enclume"]]]}, "musique": {"label": "Disque", "options": [["record.cat", "Disque « cat »", "", []], ["record.blocks", "Disque « blocks »", "", []], ["record.chirp", "Disque « chirp »", "", []], ["record.far", "Disque « far »", "", []], ["record.mall", "Disque « mall »", "", []], ["record.mellohi", "Disque « mellohi »", "", []], ["record.pigstep", "Disque « pigstep »", "", []], ["record.otherside", "Disque « otherside »", "", []], ["record.creator", "Disque « creator »", "", []], ["record.precipice", "Disque « precipice »", "", []]]}, "particule": {"label": "Particules", "options": [["heart_particle", "Cœurs", "", ["cœurs", "amour"]], ["villager_happy", "Étincelles vertes", "", ["étincelles", "briller", "magie"]], ["note_particle", "Notes de musique", "", ["notes", "musique"]], ["basic_flame_particle", "Flamme", "", ["flamme", "feu"]], ["snowflake_particle", "Flocons", "", ["flocons", "neige"]], ["basic_portal_particle", "Portail violet", "", ["portail", "violet"]], ["explosion_particle", "Petite explosion", "", ["explosion"]], ["basic_smoke_particle", "Fumée", "", ["fumée"]], ["critical_hit_emitter", "Coup critique", "", ["étoiles", "coup"]]]}, "support": {"label": "Sur quel bloc ?", "options": [["stone", "Pierre", "", ["pierre"]], ["grass_block", "Bloc d’herbe", "", ["herbe", "pelouse"]], ["dirt", "Terre", "", ["terre"]], ["sand", "Sable", "", ["sable", "plage"]], ["oak_planks", "Planches de chêne", "", ["planches", "bois"]], ["stone_bricks", "Briques de pierre", "", ["briques", "pierre", "château"]], ["brick_block", "Briques", "", ["briques"]], ["sandstone", "Grès", "", ["grès"]], ["glass", "Verre", "", ["verre", "fenêtre"]], ["white_wool", "Laine blanche", "", ["laine"]], ["white_concrete", "Béton blanc", "", ["béton"]], ["quartz_block", "Bloc de quartz", "", ["quartz"]], ["snow", "Neige", "", ["neige"]], ["ice", "Glace", "", ["glace"]], ["water", "Eau", "", ["eau", "piscine"]], ["sea_lantern", "Lanterne aquatique", "", ["lumière", "lanterne"]], ["gold_block", "Bloc d’or", "", ["or"]]]}, "blocadonner": {"label": "Bloc à donner", "options": [["stone", "Pierre", "", ["pierre"]], ["grass_block", "Bloc d’herbe", "", ["herbe", "pelouse"]], ["dirt", "Terre", "", ["terre"]], ["sand", "Sable", "", ["sable", "plage"]], ["oak_planks", "Planches de chêne", "", ["planches", "bois"]], ["stone_bricks", "Briques de pierre", "", ["briques", "pierre", "château"]], ["brick_block", "Briques", "", ["briques"]], ["sandstone", "Grès", "", ["grès"]], ["glass", "Verre", "", ["verre", "fenêtre"]], ["white_wool", "Laine blanche", "", ["laine"]], ["white_concrete", "Béton blanc", "", ["béton"]], ["quartz_block", "Bloc de quartz", "", ["quartz"]], ["snow", "Neige", "", ["neige"]], ["ice", "Glace", "", ["glace"]], ["sea_lantern", "Lanterne aquatique", "", ["lumière", "lanterne"]], ["gold_block", "Bloc d’or", "", ["or"]]]}, "outil": {"label": "Outil", "options": [["iron_pickaxe", "Pioche en fer", "", ["pioche"]], ["diamond_pickaxe", "Pioche en diamant", "", ["pioche"]], ["iron_axe", "Hache en fer", "", ["hache"]], ["iron_shovel", "Pelle en fer", "", ["pelle"]], ["shears", "Cisailles", "", ["cisailles"]]]}, "case": {"label": "Case de la barre", "options": [["0", "Case 1", "", []], ["1", "Case 2", "", []], ["2", "Case 3", "", []], ["3", "Case 4", "", []], ["4", "Case 5", "", []], ["5", "Case 6", "", []], ["6", "Case 7", "", []], ["7", "Case 8", "", []], ["8", "Case 9", "", []]]}, "chimie": {"label": "Table", "options": [["compound_creator", "Créateur de composés", "On assemble des éléments pour faire un composé.", ["composé"]], ["element_constructor", "Constructeur d’éléments", "On fabrique un élément avec des protons, neutrons et électrons.", ["élément", "atome"]], ["lab_table", "Table de laboratoire", "On fait des expériences avec les composés.", ["laboratoire", "expérience"]], ["material_reducer", "Réducteur de matière", "On décompose un bloc en éléments.", ["décomposer", "réduire"]]]}, "angle": {"label": "Il regarde vers", "options": [["180", "le nord", "", []], ["0", "le sud", "", []], ["-90", "l’est", "", []], ["90", "l’ouest", "", []]]}, "metier": {"label": "Métier", "options": [["farmer", "Fermier", "", ["fermier", "ferme"]], ["librarian", "Bibliothécaire", "", ["bibliothécaire", "livres"]], ["cleric", "Prêtre", "", ["prêtre"]], ["armorer", "Armurier", "", ["armurier", "armure"]], ["butcher", "Boucher", "", ["boucher", "viande"]]]}, "devenir": {"label": "Nouveau métier", "options": [["become_fisherman", "Pêcheur", "", ["pêcheur", "poisson"]], ["become_mason", "Maçon", "", ["maçon"]], ["become_cartographer", "Cartographe", "", ["cartographe", "carte"]], ["become_fletcher", "Archer", "", ["archer", "flèches"]], ["become_leatherworker", "Tanneur", "", ["tanneur", "cuir"]], ["become_sheperd", "Berger", "", ["berger", "laine"]], ["become_toolsmith", "Forgeron d’outils", "", ["forgeron", "outils"]], ["become_weaponsmith", "Forgeron d’armes", "", ["forgeron", "armes"]], ["become_farmer", "Fermier", "", ["fermier"]], ["become_librarian", "Bibliothécaire", "", ["bibliothécaire"]], ["become_cleric", "Prêtre", "", ["prêtre"]]]}, "oeuf": {"label": "Œuf de", "options": [["cow_spawn_egg", "Vache", "", ["vache", "lait", "ferme"]], ["sheep_spawn_egg", "Mouton", "", ["mouton", "laine", "ferme"]], ["pig_spawn_egg", "Cochon", "", ["cochon", "porc", "ferme"]], ["chicken_spawn_egg", "Poule", "", ["poule", "œuf", "ferme"]], ["horse_spawn_egg", "Cheval", "", ["cheval", "monter"]], ["donkey_spawn_egg", "Âne", "", ["âne"]], ["cat_spawn_egg", "Chat", "", ["chat"]], ["wolf_spawn_egg", "Loup", "", ["loup", "chien"]], ["rabbit_spawn_egg", "Lapin", "", ["lapin"]], ["fox_spawn_egg", "Renard", "", ["renard"]], ["panda_spawn_egg", "Panda", "", ["panda"]], ["bee_spawn_egg", "Abeille", "", ["abeille", "miel"]], ["parrot_spawn_egg", "Perroquet", "", ["perroquet", "oiseau"]], ["turtle_spawn_egg", "Tortue", "", ["tortue"]], ["axolotl_spawn_egg", "Axolotl", "", ["axolotl"]], ["dolphin_spawn_egg", "Dauphin", "", ["dauphin", "mer"]], ["polar_bear_spawn_egg", "Ours polaire", "", ["ours"]], ["llama_spawn_egg", "Lama", "", ["lama"]], ["camel_spawn_egg", "Dromadaire", "", ["dromadaire", "chameau"]], ["villager_spawn_egg", "Villageois", "", ["villageois", "habitant"]]]}, "monture": {"label": "Monture", "options": [["horse", "Cheval", "", ["cheval"]], ["donkey", "Âne", "", ["âne"]], ["pig", "Cochon", "", ["cochon"]], ["llama", "Lama", "", ["lama"]], ["camel", "Dromadaire", "", ["dromadaire"]]]}, "tenue": {"label": "Habit", "options": [["slot.armor.head 0 golden_helmet", "Casque en or", "", []], ["slot.armor.head 0 diamond_helmet", "Casque en diamant", "", []], ["slot.armor.head 0 carved_pumpkin", "Citrouille sur la tête", "", []], ["slot.armor.chest 0 iron_chestplate", "Plastron en fer", "", []], ["slot.armor.chest 0 diamond_chestplate", "Plastron en diamant", "", []], ["slot.armor.legs 0 leather_leggings", "Pantalon en cuir", "", []], ["slot.armor.feet 0 diamond_boots", "Bottes en diamant", "", []]]}, "rotation": {"label": "Rotation", "options": [["90_degrees", "Un quart de tour", "", []], ["180_degrees", "Un demi-tour", "", []], ["270_degrees", "Trois quarts de tour", "", []]]}};
+function listesDe(c){return [...new Set((c.cmd.match(/<[^>]+>/g)||[]).map(x=>x.slice(1,-1)))].filter(k=>LISTES[k]);}
+
+/* Catégories : nom affiché + pictogramme pixel (8×8) */
+const PIX={
+  'Temps et météo':{c:{y:'#FFD43B',o:'#F59F00'},m:['..y..y..','...yy...','.yyyyyy.','yyyooyyy','yyyooyyy','.yyyyyy.','...yy...','..y..y..']},
+  'Se déplacer':{c:{g:'#2F9E73',d:'#156B4A',w:'#B7F5DC'},m:['..gggg..','.gggggg.','gggwwggg','ggwddwgg','ggwddwgg','gggwwggg','.gggggg.','..gggg..']},
+  'Objets et inventaire':{c:{b:'#A0662D',d:'#5C3A17',k:'#2B2B2B',y:'#F2C94C'},m:['dddddddd','dbbbbbbd','dbbbbbbd','dddyyddd','dbbyybbd','dbbbbbbd','dbbbbbbd','dddddddd']},
+  'Mode de jeu':{c:{r:'#E03131',d:'#8F1D1D',w:'#FFC9C9'},m:['.rr..rr.','rwrrrrrr','rrrrrrrr','rrrrrrrr','.rrrrrd.','..rrrd..','...rd...','........']},
+  'Construire':{c:{g:'#5FA83A',l:'#7CC24E',b:'#8A5A35',d:'#6B4426'},m:['glglglgl','lglglglg','bgbdgbgb','bbdbbbdb','dbbbdbbb','bbbdbbdb','bdbbbbbd','bbbbdbbb']},
+  'Monde et règles':{c:{b:'#3B82F6',g:'#40C057',d:'#1D4ED8'},m:['..bbbb..','.bggbbb.','bgggbbgb','bbggbggb','bbbbbggb','bgbbbbbb','.bggbbd.','..bbbb..']},
+  'Classe':{c:{k:'#2B2B2B',w:'#F8F9FA',y:'#FAB005',b:'#8A5A35'},m:['kkkkkkkk','kwwwwwwk','kwkkwwwk','kwwwwkwk','kwkkwwwk','kwwwwwwk','kkkkkkkk','..b..b..']},
+  'Messages':{c:{w:'#FFFFFF',k:'#495057'},m:['kkkkkkkk','kwwwwwwk','kwkkkkwk','kwwwwwwk','kwkkkwwk','kwwwwwwk','kkkwkkkk','..kk....']},
+  'Effets et ambiance':{c:{k:'#2B2B2B',p:'#C084FC',y:'#FFD43B'},m:['....kkk.','....k.k.','.y..k.k.','yyy.k...','.y..k...','..kkk...','.kkkk.p.','..kk.ppp']},
+  'PNJ et personnages':{c:{b:'#C69C6D',k:'#2B2B2B',n:'#8B5A2B',g:'#6B8E23'},m:['..bbbb..','.bbbbbb.','.bkbbkb.','.bbbbbb.','.bbnnbb.','.bbnnbb.','.gbbbbg.','.gggggg.']},
+  'Créatures':{c:{g:'#51CF66',d:'#2B8A3E',k:'#111111'},m:['gggggggg','gdggggdg','gkkggkkg','gkkggkkg','gggkkggg','ggkkkkgg','ggkggkgg','gggggggg']}
+};
+function pix(cat){const p=PIX[cat];if(!p)return '';let r='';p.m.forEach((ligne,y)=>{[...ligne].forEach((ch,x)=>{if(p.c[ch])r+='<rect x="'+x+'" y="'+y+'" width="1" height="1" fill="'+p.c[ch]+'"/>';});});
+  return '<svg viewBox="0 0 8 8" aria-hidden="true" shape-rendering="crispEdges">'+r+'</svg>';}
+
+/* Mots trop courants, ignorés dans la recherche */
+const VIDES=new Set('le la les l un une des de du d a au aux et ou je j tu il on me m te t se s mon ma mes ton ta tes pour par sur dans avec en est c ca comment faire veux voudrais peux mettre commande quoi qui que quel quelle'.split(' '));
+
+/* =====================================================================
+   3. OUTILS
+   ===================================================================== */
+const $=s=>document.querySelector(s);
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function store(k,v){try{if(v===undefined){return JSON.parse(localStorage.getItem(APP.cle+'-'+k));}localStorage.setItem(APP.cle+'-'+k,JSON.stringify(v));}catch(e){return null;}}
+function norm(s){return String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[’']/g,' ');}
+function mots(s){return norm(s).split(/[^a-z0-9]+/).filter(Boolean);}
+function lev(a,b){if(Math.abs(a.length-b.length)>2)return 9;const d=[];for(let i=0;i<=a.length;i++){d[i]=[i];}for(let j=1;j<=b.length;j++)d[0][j]=j;
+  for(let i=1;i<=a.length;i++)for(let j=1;j<=b.length;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return d[a.length][b.length];}
+/* singulier simple : « oiseaux » → « oiseau », « pluies » → « pluie » */
+function racine(m){return m.length>4?m.replace(/(x|s)$/,''):m;}
+
+const synth=window.speechSynthesis||null;
+function say(t){if(!synth||!t)return;try{synth.cancel();const u=new SpeechSynthesisUtterance(t);const v=synth.getVoices();const fr=v.find(x=>/fr[-_]BE/i.test(x.lang))||v.find(x=>/^fr/i.test(x.lang));u.lang=fr?fr.lang:'fr-FR';if(fr)u.voice=fr;u.rate=.9;synth.speak(u);}catch(e){}}
+
+/* Index de recherche préparé une fois */
+function motsListes(c){return listesDe(c).flatMap(k=>LISTES[k].options.flatMap(o=>[o[1]].concat(o[3])));}
+const INDEX=COMMANDES.map(c=>({c,
+  brut:(c.mots||[]).flatMap(mots),
+  cles:(c.mots||[]).flatMap(mots).map(racine),
+  opt:motsListes(c).flatMap(mots).map(racine),   /* mots des choix des listes : comptent moins */
+  texte:[c.titre,c.explication].flatMap(mots).map(racine),
+  cmd:mots(c.cmd)}));
+
+function score(e,toks,bruts){
+  let total=0,trouves=0;
+  for(const [i,t] of toks.entries()){
+    let s=bruts&&e.brut.includes(bruts[i])?1:0; /* mot exact : un peu plus haut */
+    if(e.cles.includes(t))s+=10;
+    else if(e.cmd.includes(t))s+=9;
+    else if(e.opt.includes(t))s+=6;
+    else if(t.length>=3&&e.cles.some(k=>k.startsWith(t)))s+=7;
+    else if(t.length>=3&&e.cmd.some(k=>k.startsWith(t)))s+=6;
+    else if(e.texte.includes(t))s+=5;
+    else if(t.length>=4&&e.texte.some(k=>k.startsWith(t)))s+=4;
+    else if(t.length>=6&&e.cles.concat(e.texte).some(k=>k.length>=6&&k.slice(0,6)===t.slice(0,6)))s+=3; /* même famille : téléportation → téléporter */
+    else if(t.length>=4&&e.cles.some(k=>lev(k,t)<=(t.length>=8?2:1)))s+=2; /* petite faute de frappe */
+    if(s>1){total+=s;trouves++;}
+  }
+  return trouves?total+trouves*20:0;
+}
+
+/* =====================================================================
+   4. ÉTAT ET AFFICHAGE
+   ===================================================================== */
+const CATS=Object.keys(PIX).filter(k=>COMMANDES.some(c=>c.categorie===k));
+const S={q:'',vue:'tout',sel:null};   /* vue : 'tout', 'creation', 'eleve' ou 'cat:<thème>' ; jamais gardée en mémoire */
+const VUES=[['tout','Toutes les commandes',c=>true],['creation','★ Pour créer un monde',c=>c.creation],['eleve','Pour les élèves',c=>c.public==='eleve']];
+function filtreVue(v){if(v.startsWith('cat:')){const k=v.slice(4);return c=>c.categorie===k;}const x=VUES.find(x=>x[0]===v);return x?x[2]:(c=>true);}
+function nomVue(v){if(v.startsWith('cat:'))return v.slice(4);const x=VUES.find(x=>x[0]===v);return x?x[1]:'';}
+/* Pictogrammes des boutons du haut (pixels, couleur du texte) */
+function icoPix(m,coul){let r='';m.forEach((l,y)=>[...l].forEach((ch,x)=>{const f=ch==='x'?'currentColor':(coul&&coul[ch]);if(f)r+='<rect x="'+x+'" y="'+y+'" width="1" height="1" fill="'+f+'"/>';}));
+  return '<svg viewBox="0 0 8 8" aria-hidden="true" shape-rendering="crispEdges">'+r+'</svg>';}
+const ICO_DE=icoPix(['xxxxxxxx','xkwwwwkx','xwwwwwwx','xwwkkwwx','xwwkkwwx','xwwwwwwx','xkwwwwkx','xxxxxxxx'],{k:'#2B2B2B',w:'#FFFFFF'});   /* dé : bord couleur du texte, face blanche */
+const ICO_AIDE=icoPix(['..xxxx..','.xx..xx.','.....xx.','....xx..','...xx...','...xx...','........','...xx...']);
+const ICO_REG=icoPix(['...xx...','.x.xx.x.','..xxxx..','xxx..xxx','xxx..xxx','..xxxx..','.x.xx.x.','...xx...']);
+
+function setStyle(s){store('style',s);document.body.classList.toggle('simple',s==='simple');
+  document.querySelectorAll('[data-sty]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.sty===s)));}
+function setZoom(z){document.documentElement.style.setProperty('--z',z);store('taille',z);
+  document.querySelectorAll('[data-z]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.z===z)));}
+
+function menu(){
+  const b=(v,lib,ico,cls)=>'<button type="button" class="vue'+(cls?' '+cls:'')+'" data-vue="'+esc(v)+'" aria-current="'+(S.vue===v)+'">'+(ico||'')+'<span>'+esc(lib)+'</span><span class="n">'+COMMANDES.filter(filtreVue(v)).length+'</span></button>';
+  $('#menu').innerHTML=VUES.map(x=>b(x[0],x[1],'',x[0]==='creation'?'etoile':'')).join('')+'<p class="sep">Thèmes</p>'+CATS.map(k=>b('cat:'+k,k,pix(k))).join('')+
+    '<div class="menu-style"><span class="lab">Affichage</span><div class="boutons">'+[['minecraft','Minecraft'],['simple','Simple']].map(s=>'<button type="button" class="pill" data-sty="'+s[0]+'" aria-pressed="'+(document.body.classList.contains('simple')===(s[0]==='simple'))+'">'+s[1]+'</button>').join('')+'</div></div>';}
+function choisirVue(v){S.vue=v;S.sel=null;$('.page').classList.remove('detail-ouvert');menu();afficher();$('#vueTitre').textContent=nomVue(v);
+  const cur=document.querySelector('.vue[aria-current="true"]');if(cur&&cur.scrollIntoView)cur.scrollIntoView({block:'nearest',inline:'nearest'});window.scrollTo({top:0});}
+
+const IDEES=['jour','voler','pluie','monstres','téléporter','photo'];
+function idees(){$('#idees').innerHTML='Idées de recherche :'+IDEES.map(m=>'<button type="button" class="idee" data-idee="'+esc(m)+'">'+esc(m)+'</button>').join('');}
+
+function carte(c){
+  const badge=c.public==='eleve'?'<span class="badge eleve">Élève</span>':'<span class="badge enseignant">Enseignant</span>';
+  const teste=(c.teste?'<span class="badge teste">Testée en classe ✓</span>':'')+(c.education?'<span class="badge edu">Education</span>':'');
+  return '<article class="panneau carte" data-id="'+esc(c.id)+'">'+
+    '<div class="carte-haut">'+pix(c.categorie)+'<h2 class="titre">'+esc(c.titre)+'</h2>'+teste+badge+'</div>'+
+    '<div class="code">'+apercu(c)+'</div>'+
+    '<p class="expl">'+esc(c.explication)+'</p>'+champsHTML(c)+'<p class="expl-choix">'+esc(explChoix(c))+'</p>'+
+    '<div class="actions"><button type="button" class="btn" data-copier="'+esc(c.id)+'">Copier</button>'+
+    '<button type="button" class="btn second hp" data-ecouter="'+esc(c.id)+'" aria-label="Écouter">'+HP+'</button></div><p class="msg" role="status"></p></article>';}
+/* Cases à remplir : <joueur>, <x>… dans la commande */
+const CHAMPS={
+  joueur:{label:'Pour qui ?',type:'joueur'},
+  message:{label:'Ton message',type:'texte'},
+  texte:{label:'Ton texte',type:'texte'},
+  raison:{label:'La raison',type:'texte'},
+  nom:{label:'Un nom (sans espace)',type:'mot'},
+  'équipe':{label:'Nom de l’équipe',type:'mot'},
+  nombre:{label:'Combien ?',type:'nombre',min:1,max:64,def:'1',court:1},
+  x:{label:'X',type:'coord',def:'0',court:1},y:{label:'Y',type:'coord',def:'70',court:1},z:{label:'Z',type:'coord',def:'0',court:1},
+  x2:{label:'Regarde X',type:'coord',def:'0',court:1},y2:{label:'Regarde Y',type:'coord',def:'64',court:1},z2:{label:'Regarde Z',type:'coord',def:'0',court:1},
+  element:{label:'Numéro (1 à 118)',type:'nombre',min:1,max:118,def:'6',court:1},
+  fonction:{label:'Nom de la fonction',type:'chemin'},
+  nompnj:{label:'Son nom',type:'texte'},
+  valeur:{label:'Nombre',type:'nombre',min:0,max:9999,def:'0',court:1},
+  ax:{label:'Coin 1 : X',type:'coord',court:1},ay:{label:'Coin 1 : Y',type:'coord',court:1},az:{label:'Coin 1 : Z',type:'coord',court:1},
+  bx:{label:'Coin 2 : X',type:'coord',court:1},by:{label:'Coin 2 : Y',type:'coord',court:1},bz:{label:'Coin 2 : Z',type:'coord',court:1}};
+for(const k in LISTES)CHAMPS[k]={label:LISTES[k].label,type:'liste',options:LISTES[k].options};
+const VAL={};   /* valeurs tapées : VAL[id][case] */
+let PRE={};     /* choix présélectionnés par la recherche : PRE[id][case] */
+/* Valeurs de départ tirées de l'exemple (ex. « /say Rangez vos affaires ! » → message) ; jamais pour le nom d'un joueur */
+const DEF={};
+function defauts(c){if(DEF[c.id])return DEF[c.id];const ks=[];
+  const re=new RegExp('^'+c.cmd.split(/(<[^>]+>)/).map(p=>{if(p[0]==='<'){ks.push(p.slice(1,-1));return '(.+?)';}return p.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}).join('')+'$');
+  const m=(c.exemple||'').match(re),r={};if(m)ks.forEach((k,i)=>{if(k!=='joueur')r[k]=m[i+1];});return DEF[c.id]=r;}
+function cases(c){return [...new Set((c.cmd.match(/<[^>]+>/g)||[]).map(x=>x.slice(1,-1)))].filter(k=>CHAMPS[k]);}
+const QUI={'@a[tag=!prof]':'Tous les élèves (sauf le prof)','@a':'Tout le monde (toi aussi)','@p':'Le joueur le plus proche','@r':'Un joueur au hasard','@s':'Moi','nom':'Un élève précis…'};
+function quiDe(c){return c.qui||['@p','@a','@r','nom'];}
+function valeur(c,k){if(k==='joueur'){const v=VAL[c.id]&&VAL[c.id].joueur;return v!=null?v:quiDe(c)[0];}const v=VAL[c.id]&&VAL[c.id][k];if(v!=null)return v;const p=PRE[c.id]&&PRE[c.id][k];if(p)return p;
+  const d=defauts(c)[k];if(d!=null)return d;const f=CHAMPS[k];return f.def||(f.type==='liste'?f.options[0][0]:'');}
+/* Explication du choix fait dans la liste */
+function explChoix(c){for(const k of listesDe(c)){const o=LISTES[k].options.find(o=>o[0]===valeur(c,k));if(o&&o[2])return o[1]+' : '+o[2];}return '';}
+/* Contrôle d'une case : renvoie {ok, texte} ou {ok:false, msg} */
+function controleCase(k,brut){
+  const f=CHAMPS[k],v=String(brut||'').replace(/[\r\n"]/g,' ').trim();
+  if(f.type==='liste')return f.options.some(o=>o[0]===v)?{ok:true,texte:v}:{ok:false,msg:'Choisis : '+f.label.toLowerCase()+'.'};
+  if(!v)return {ok:false,msg:'Écris d’abord : '+f.label.toLowerCase().replace(/ \(.*\)/,'')+'.'};
+  if(f.type==='nombre'){const n=Number(v);return Number.isInteger(n)&&n>=f.min&&n<=f.max?{ok:true,texte:String(n)}:{ok:false,msg:'Écris un nombre entre '+f.min+' et '+f.max+'.'};}
+  if(f.type==='coord')return /^(~|~?-?\d+)$/.test(v)?{ok:true,texte:v}:{ok:false,msg:'Pour '+f.label+', écris un nombre. Exemple : 70 ou -25.'};
+  if(f.type==='mot'){const m=v.normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,'_').replace(/[^A-Za-z0-9_-]/g,'');return m?{ok:true,texte:m}:{ok:false,msg:'Écris un nom avec des lettres ou des chiffres.'};}
+  if(f.type==='chemin'){const m=v.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,'_').replace(/[^a-z0-9_\/-]/g,'');return m?{ok:true,texte:m}:{ok:false,msg:'Écris le nom de la fonction. Exemple : labo/reinitialiser.'};}
+  if(f.type==='joueur')return {ok:true,texte:/\s/.test(v)?'"'+v+'"':v};
+  if(f.type==='qui')return v;
+  return {ok:true,texte:v};}
+/* Commande complète, ou le premier problème trouvé */
+/* « Pour qui ? » : un symbole (@a…) ou le nom tapé dans la case « Nom de l'élève » */
+function joueurFinal(c){const v=valeur(c,'joueur');if(v!=='nom')return {ok:true,texte:v};
+  const n=(VAL[c.id]&&VAL[c.id].nomJoueur)||'';return n.trim()?controleCase('joueur',n):{ok:false,msg:'Écris d’abord le nom de l’élève.'};}
+function commandeFinale(c){
+  let cmd=c.cmd;
+  for(const k of cases(c)){const r=k==='joueur'?joueurFinal(c):controleCase(k,valeur(c,k));if(!r.ok)return {ok:false,msg:r.msg};cmd=cmd.split('<'+k+'>').join(r.texte);}
+  return {ok:true,cmd};}
+function apercu(c){
+  return c.cmd.split(/(<[^>]+>)/).map(p=>{const k=p.slice(1,-1);if(p[0]!=='<'||!CHAMPS[k])return esc(p);
+    const r=k==='joueur'?joueurFinal(c):controleCase(k,valeur(c,k));return r.ok?esc(r.texte):'<span class="vide-ph">'+esc(p)+'</span>';}).join('');}
+function champsHTML(c){
+  const ks=cases(c);if(!ks.length)return '';
+  return '<div class="champs">'+ks.map(k=>{const f=CHAMPS[k],v=valeur(c,k),a='data-cid="'+esc(c.id)+'" data-case="'+esc(k)+'" id="f-'+esc(c.id)+'-'+esc(k)+'"';
+    if(k==='joueur'){const q=quiDe(c),n=(VAL[c.id]&&VAL[c.id].nomJoueur)||'';
+      return '<label class="champ-c" for="f-'+esc(c.id)+'-joueur"><span>Pour qui ?</span><select '+a+'>'+q.map(x=>'<option value="'+x+'"'+(x===v?' selected':'')+'>'+esc(QUI[x])+'</option>').join('')+'</select></label>'+
+        '<label class="champ-c nomj" for="f-'+esc(c.id)+'-nomJoueur"'+(v==='nom'?'':' hidden')+'><span>'+CRAYON+'Nom de l’élève</span><input data-cid="'+esc(c.id)+'" data-case="nomJoueur" id="f-'+esc(c.id)+'-nomJoueur" type="text" value="'+esc(n)+'" placeholder="Exemple : Alex" autocomplete="off" autocapitalize="off" spellcheck="false"></label>';}
+    const ctl=f.type==='liste'?'<select '+a+'>'+f.options.map(o=>'<option value="'+o[0]+'"'+(o[0]===v?' selected':'')+'>'+esc(o[1])+'</option>').join('')+'</select>'
+      :'<input '+a+' type="text" value="'+esc(v)+'" placeholder="'+(k==='joueur'?'Exemple : Alex':'Écris ici')+'" autocomplete="off" autocapitalize="off" spellcheck="false"'+(f.type==='nombre'||f.type==='coord'?' inputmode="numeric"':'')+'>';
+    return '<label class="champ-c'+(f.court?' court':'')+'" for="f-'+esc(c.id)+'-'+esc(k)+'"><span>'+(f.type==='liste'?'':CRAYON)+esc(f.label)+'</span>'+ctl+'</label>';}).join('')+'</div>';}
+const CRAYON='<svg class="crayon" viewBox="0 0 8 8" aria-hidden="true" shape-rendering="crispEdges"><rect x="5" y="0" width="2" height="2" fill="#E8A0A0"/><rect x="4" y="2" width="2" height="2" fill="#F2C94C"/><rect x="3" y="3" width="2" height="2" fill="#F2C94C"/><rect x="2" y="4" width="2" height="2" fill="#F2C94C"/><rect x="1" y="6" width="1" height="1" fill="#3F3F3F"/><rect x="2" y="6" width="1" height="1" fill="#D9B38C"/><rect x="1" y="5" width="1" height="1" fill="#D9B38C"/></svg> ';
+
+/* Haut-parleur en pixels */
+const HP='<svg viewBox="0 0 9 8" aria-hidden="true" shape-rendering="crispEdges" fill="currentColor"><rect x="0" y="3" width="2" height="2"/><rect x="2" y="2" width="1" height="4"/><rect x="3" y="1" width="1" height="6"/><rect x="4" y="0" width="1" height="8"/><rect x="6" y="2" width="1" height="1"/><rect x="7" y="3" width="1" height="2"/><rect x="6" y="5" width="1" height="1"/></svg>';
+
+function resultats(){
+  const f=filtreVue(S.vue);let liste=INDEX.filter(e=>f(e.c));
+  /* Sans recherche : les commandes pour créer un monde d'abord */
+  liste=liste.map((e,i)=>({e,i})).sort((a,b)=>(b.e.c.creation?1:0)-(a.e.c.creation?1:0)||a.i-b.i).map(x=>x.e);
+  const bruts=mots(S.q).filter(t=>!VIDES.has(t)),toks=bruts.map(racine);
+  if(toks.length){liste=liste.map(e=>({e,s:score(e,toks,bruts)})).filter(x=>x.s>0).sort((a,b)=>b.s-a.s).map(x=>x.e);}
+  PRE={};
+  if(toks.length)for(const e of liste)for(const k of listesDe(e.c)){
+    let best=null,bs=0;
+    for(const o of LISTES[k].options){const ws=[o[1]].concat(o[3]).flatMap(mots).map(racine);
+      const s=toks.filter(t=>ws.includes(t)||(t.length>=3&&ws.some(w=>w.startsWith(t)))).length;if(s>bs){bs=s;best=o[0];}}
+    if(best)(PRE[e.c.id]=PRE[e.c.id]||{})[k]=best;}
+  return {liste:liste.map(e=>e.c),cherche:toks.length>0};}
+
+/* Une ligne par commande ; la commande choisie s'affiche en détail à droite (sur téléphone : en plein écran) */
+function ligne(c){return '<button type="button" class="ligne" data-sel="'+esc(c.id)+'" aria-current="'+(c.id===S.sel)+'">'+pix(c.categorie)+'<span>'+esc(c.titre)+'</span>'+(c.public==='eleve'?'<span class="pt">Élève</span>':'')+'</button>';}
+function montrer(id,ouvrir){
+  S.sel=id;document.querySelectorAll('.ligne').forEach(l=>l.setAttribute('aria-current',String(l.dataset.sel===id)));
+  const c=COMMANDES.find(x=>x.id===id);if(!c)return;
+  $('#detail').innerHTML='<button type="button" class="btn second retour" data-retour="1">← Retour à la liste</button>'+carte(c);
+  if(ouvrir&&matchMedia('(max-width:760px)').matches){$('.page').classList.add('detail-ouvert');window.scrollTo({top:0});}}
+function afficher(){
+  const r=resultats();
+  $('#effacer').hidden=!S.q;
+  const n=r.liste.length;
+  $('#compte').textContent=n?(n===1?'1 commande':n+' commandes'):'';
+  if(!n){S.sel=null;$('#liste').innerHTML='<p class="rien">Aucune commande.</p>';
+    $('#detail').innerHTML='<div class="panneau vide-detail"><p>Je n’ai rien trouvé.</p><p>Essaie un autre mot, ou clique sur une idée :</p><div class="actions">'+
+      IDEES.map(m=>'<button type="button" class="idee" data-idee="'+esc(m)+'">'+esc(m)+'</button>').join('')+'</div>'+
+      (S.vue!=='tout'?'<p><button type="button" class="btn second" data-vue="tout">Chercher dans toutes les commandes</button></p>':'')+'</div>';
+    return;}
+  if(!r.liste.some(c=>c.id===S.sel))S.sel=r.liste[0].id;
+  $('#liste').innerHTML=r.liste.map(ligne).join('');
+  montrer(S.sel,false);}
+
+function copier(texte,btn){
+  const msg=btn.closest('.carte').querySelector('.msg');
+  const fini=()=>{btn.textContent='Copié ✓';btn.classList.add('fait');msg.className='msg ok';msg.textContent='✓ Copiée ! Dans Minecraft : T, puis Ctrl + V.';
+    setTimeout(()=>{btn.textContent='Copier';btn.classList.remove('fait');msg.textContent='';},2500);};
+  const rate=()=>{const code=btn.closest('.carte').querySelector('.code');try{const s=getSelection(),r=document.createRange();r.selectNodeContents(code);s.removeAllRanges();s.addRange(r);}catch(e){}
+    msg.className='msg ko';msg.textContent='Le navigateur a bloqué la copie. La commande est sélectionnée : appuie sur Ctrl + C (Cmd + C sur Mac).';};
+  const secours=()=>{let ok=false;try{const t=document.createElement('textarea');t.value=texte;t.setAttribute('readonly','');t.style.position='fixed';t.style.opacity='0';document.body.appendChild(t);t.select();t.setSelectionRange(0,texte.length);ok=document.execCommand('copy');t.remove();}catch(e){}
+    if(ok)fini();else rate();};
+  try{if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(texte).then(fini,secours);}else secours();}catch(e){secours();}}
+
+/* ---------- Aide pas à pas */
+const AIDE=[
+ {t:'Ouvre le chat',i:'<div class="chat"><span class="curseur"></span></div>',
+  p:['Sur l’ordinateur : appuie sur la touche T.','Sur tablette ou téléphone : touche la bulle en haut de l’écran.','Attention : n’ouvre pas le chat avec la touche /. La commande collée aurait deux /.']},
+ {t:'Commence par /',i:'<div class="chat"><span class="c">/time set day</span></div>',
+  p:['Une commande commence toujours par la barre <b>/</b>.','Ensuite, les mots sont séparés par un espace.']},
+ {t:'Pour qui ?',i:'<div class="symb"><code>@s</code><span>moi</span><code>@a</code><span>tous les joueurs</span><code>@p</code><span>le joueur le plus proche</span><code>@r</code><span>un joueur au hasard</span><code>@e</code><span>toutes les créatures</span></div>',
+  p:['Ces symboles disent qui reçoit la commande.','<b>@a[tag=!prof]</b> : tous les élèves, sauf toi. Avant, écris <b>/tag @s add prof</b>.','Tu peux aussi écrire le nom d’un joueur.']},
+ {t:'Les positions',i:'<div class="chat"><span class="c">/tp @s 100 70 -50</span></div>',
+  p:['Une position, ce sont trois nombres : X, Y, Z.','Y, c’est la hauteur.','Pour voir ta position : <b>/gamerule showcoordinates true</b>.']},
+ {t:'Le signe ~',i:'<div class="chat"><span class="c">/tp @s ~ ~10 ~</span></div>',
+  p:['Le signe ~ veut dire : là où je suis.','~ ~10 ~ : 10 blocs au-dessus de moi.']},
+ {t:'Copier, puis coller',i:'<div class="chat"><span class="c">/say Rangez vos affaires !</span></div>',
+  p:['Dans l’appli : choisis ou remplis les cases, puis clique sur « Copier ».','Dans Minecraft : ouvre le chat avec T, puis colle avec Ctrl + V (Cmd + V sur Mac).']},
+ {t:'Envoie la commande',i:'<div class="chat"><span class="c">/weather clear</span><br><span>Le temps est maintenant : dégagé</span></div>',
+  p:['Appuie sur Entrée.','Un message rouge ? Il y a une faute. Vérifie les espaces.']},
+ {t:'Élève ou enseignant ?',i:'<p><span class="badge eleve">Élève</span> Tout le monde peut l’utiliser.</p><p><span class="badge enseignant">Enseignant</span> Il faut les droits de l’enseignant, et les triches activées dans les paramètres du monde.</p>',
+  p:['Les commandes sont vérifiées avec les données officielles de Minecraft.','Elles n’ont pas encore toutes été testées dans Minecraft Education.']}];
+let aideN=0,aideRetour=null;
+function aideMontrer(){const e=AIDE[aideN];
+  $('#aideSegs').innerHTML=AIDE.map((_,k)=>'<i class="'+(k<=aideN?'on':'')+'"></i>').join('');
+  $('#aideCompte').textContent='Étape '+(aideN+1)+' sur '+AIDE.length;
+  $('#aideTitre').textContent=e.t;$('#aideIllu').innerHTML=e.i;$('#aideTexte').innerHTML=e.p.map(x=>'<p>'+x+'</p>').join('');
+  $('#aidePrec').style.visibility=aideN?'visible':'hidden';$('#aideSuiv').textContent=aideN===AIDE.length-1?'J’ai compris':'Suivant';}
+function aideOuvrir(){aideRetour=document.activeElement;aideN=0;aideMontrer();$('#aide').hidden=false;$('#aideSuiv').focus();}
+function aideFermer(){$('#aide').hidden=true;if(synth)synth.cancel();if(aideRetour)aideRetour.focus();}
+$('#aideEcoute').innerHTML=HP;
+$('#ouvrirAide').addEventListener('click',aideOuvrir);
+$('#aidePrec').addEventListener('click',()=>{if(aideN>0){aideN--;aideMontrer();}});
+$('#aideSuiv').addEventListener('click',()=>{if(aideN<AIDE.length-1){aideN++;aideMontrer();}else aideFermer();});
+$('#aideEcoute').addEventListener('click',()=>{const e=AIDE[aideN];say(e.t+'. '+e.p.join(' ').replace(/<[^>]+>/g,''));});
+$('#aide').addEventListener('click',e=>{if(e.target.id==='aide')aideFermer();});
+document.addEventListener('keydown',e=>{if($('#aide').hidden)return;if(e.key==='Escape')aideFermer();else if(e.key==='ArrowRight')$('#aideSuiv').click();else if(e.key==='ArrowLeft')$('#aidePrec').click();});
+(function(){let x0=null;const b=$('#aide');b.addEventListener('touchstart',e=>{x0=e.touches[0].clientX;},{passive:true});
+  b.addEventListener('touchend',e=>{if(x0==null)return;const dx=e.changedTouches[0].clientX-x0;x0=null;if(Math.abs(dx)>60)(dx<0?$('#aideSuiv'):$('#aidePrec')).click();});})();
+
+/* ---------- Réglages : petit panneau sous la roue dentée */
+function reglages(ouvrir){$('#reglages').hidden=!ouvrir;$('#ouvrirReglages').setAttribute('aria-expanded',String(ouvrir));}
+$('#ouvrirReglages').addEventListener('click',()=>reglages($('#reglages').hidden));
+document.addEventListener('click',e=>{if(!$('#reglages').hidden&&!e.target.closest('#reglages,#ouvrirReglages'))reglages(false);});
+
+/* ---------- Je découvre une commande : tirage sans répétition parmi les commandes utiles en classe */
+let decSac=[],decActuelle=null,decRetour=null;
+function decTirer(){if(!decSac.length){decSac=COMMANDES.filter(c=>c.decouverte!==false).map(c=>c.id);for(let i=decSac.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[decSac[i],decSac[j]]=[decSac[j],decSac[i]];}
+    if(decActuelle&&decSac[decSac.length-1]===decActuelle.id&&decSac.length>1)decSac.unshift(decSac.pop());}
+  const id=decSac.pop();decActuelle=COMMANDES.find(c=>c.id===id);$('#decCarte').innerHTML=carte(decActuelle);}
+function decOuvrir(){decRetour=document.activeElement;decTirer();$('#decouverte').hidden=false;$('#decAutre').focus();}
+function decFermer(){$('#decouverte').hidden=true;if(decRetour)decRetour.focus();}
+$('#ouvrirDecouverte').addEventListener('click',decOuvrir);
+$('#decAutre').addEventListener('click',decTirer);
+$('#decFermer').addEventListener('click',decFermer);
+$('#decTheme').addEventListener('click',()=>{const k=decActuelle.categorie;decFermer();choisirVue('cat:'+k);});
+$('#decouverte').addEventListener('click',e=>{if(e.target.id==='decouverte')decFermer();});
+document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(!$('#decouverte').hidden)decFermer();if(!$('#reglages').hidden){reglages(false);$('#ouvrirReglages').focus();}});
+
+/* Texte lu à voix haute : on ne lit pas les symboles de la commande */
+function aLire(c){return c.titre+'. '+c.explication+' '+explChoix(c);}
+
+/* =====================================================================
+   5. ÉVÉNEMENTS
+   ===================================================================== */
+/* Cases à remplir : mémoriser et mettre à jour l'aperçu */
+function saisie(e){const t=e.target;if(!t.dataset||!t.dataset.cid)return;const c=COMMANDES.find(x=>x.id===t.dataset.cid);if(!c)return;
+  (VAL[c.id]=VAL[c.id]||{})[t.dataset.case]=t.value;const carte=t.closest('.carte');carte.querySelector('.code').innerHTML=apercu(c);
+  carte.querySelector('.expl-choix').textContent=explChoix(c);
+  if(t.dataset.case==='joueur'){const nj=carte.querySelector('.nomj');if(nj){nj.hidden=t.value!=='nom';if(t.value==='nom'&&e.type==='change')nj.querySelector('input').focus();}}
+  const m=carte.querySelector('.msg');if(m.classList.contains('ko'))m.textContent='';}
+document.addEventListener('input',saisie);document.addEventListener('change',saisie);
+/* Ctrl + K (Cmd + K) : aller dans la recherche */
+if(/Mac/.test(navigator.platform))$('#raccourci').textContent='Cmd K';
+if(!matchMedia('(pointer:fine)').matches)$('#raccourci').hidden=true;
+document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();$('#q').focus();$('#q').select();}});
+$('#liste').addEventListener('keydown',e=>{if(e.key!=='ArrowDown'&&e.key!=='ArrowUp')return;const ls=[...document.querySelectorAll('.ligne')];
+  const i=ls.indexOf(document.activeElement);if(i<0)return;e.preventDefault();const k=Math.max(0,Math.min(ls.length-1,i+(e.key==='ArrowDown'?1:-1)));ls[k].focus();montrer(ls[k].dataset.sel,false);});
+let minuteur=null;
+$('#q').addEventListener('input',e=>{S.q=e.target.value;clearTimeout(minuteur);minuteur=setTimeout(afficher,120);});
+$('#q').addEventListener('keydown',e=>{if(e.key==='Enter')e.target.blur();});
+$('#effacer').addEventListener('click',()=>{S.q='';$('#q').value='';afficher();$('#q').focus();});
+document.addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b)return;
+  if(b.dataset.sty)setStyle(b.dataset.sty);
+  else if(b.dataset.z)setZoom(b.dataset.z);
+  else if(b.dataset.sel)montrer(b.dataset.sel,true);
+  else if(b.dataset.retour){$('.page').classList.remove('detail-ouvert');const l=document.querySelector('.ligne[aria-current="true"]');if(l){l.scrollIntoView({block:'center'});l.focus();}}
+  else if(b.dataset.vue){if(b.closest('#decouverte'))decFermer();choisirVue(b.dataset.vue);}
+  else if(b.dataset.idee){S.q=b.dataset.idee;$('#q').value=S.q;afficher();}
+  else if(b.dataset.copier){const c=COMMANDES.find(x=>x.id===b.dataset.copier);if(!c)return;const r=commandeFinale(c);
+    if(r.ok)copier(r.cmd,b);else{const m=b.closest('.carte').querySelector('.msg');m.className='msg ko';m.textContent='✗ '+r.msg;}}
+  else if(b.dataset.ecouter){const c=COMMANDES.find(x=>x.id===b.dataset.ecouter);if(c)say(aLire(c));}
+});
+
+/* =====================================================================
+   6. DÉMARRAGE
+   ===================================================================== */
+setStyle(store('style')==='simple'?'simple':'minecraft');
+setZoom(['0.9','1','1.15'].includes(store('taille'))?store('taille'):'1');
+$('#logoIco').innerHTML=pix('Construire');$('#icoDe').innerHTML=ICO_DE;$('#icoAide').innerHTML=ICO_AIDE;$('#icoReg').innerHTML=ICO_REG;
+menu();afficher();
+$('#foot').innerHTML='Version bêta de découverte '+esc(APP.version)+'<br>Application produite par IA à partir de documents Internet (Mojang, Microsoft Learn, Minecraft Wiki : voir « Sources des données »). Des erreurs peuvent survenir.<br>Application développée par Claude AI sous la supervision de Riga Ludovic.<br>Outil non officiel, sans lien avec Mojang ni Microsoft. Minecraft est une marque de Mojang et Microsoft.';
+window.__appli={montrer,choisirVue,decOuvrir,decTirer,joueurFinal,AIDE,COMMANDES,LISTES,resultats,S,afficher,commandeFinale,controleCase,VAL,CHAMPS,valeur};
+</script>
+</body>
+</html>
