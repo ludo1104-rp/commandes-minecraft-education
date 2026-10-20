@@ -35,3 +35,7 @@ Chaque commande, et chaque choix des listes, est vérifiée avec les données of
 Application produite par IA (Claude) sous la supervision de Riga Ludovic, enseignant (enseignement secondaire spécialisé). Version bêta de découverte.
 
 Outil non officiel, sans lien avec Mojang ni Microsoft. Minecraft est une marque de Mojang et Microsoft.
+
+## Licence
+
+[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.fr) : partage et adaptation permis, en citant l'auteur, sans usage commercial, sous la même licence. Voir le fichier `LICENSE`.
