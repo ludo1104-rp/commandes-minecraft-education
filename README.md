@@ -2,6 +2,8 @@
 
 Une appli web pour trouver vite la bonne commande de chat dans **Minecraft Education**, la copier et la coller dans le jeu.
 
+**Ouvrir l’application : https://ludo1104-rp.github.io/commandes-minecraft-education/**
+
 Pensée pour une classe : des phrases courtes, un style « Minecraft » ou « Simple », trois tailles de texte et une lecture à voix haute.
 
 ## Ce qu'elle fait
@@ -15,7 +17,7 @@ Pensée pour une classe : des phrases courtes, un style « Minecraft » ou « Si
 
 ## Utiliser l'appli
 
-Ouvrir la page en ligne (lien GitHub Pages ci-dessous), ou télécharger `index.html` et l'ouvrir dans un navigateur. Aucune installation, aucun compte.
+Ouvrir la page en ligne, ou télécharger `index.html` et l'ouvrir dans un navigateur. Aucune installation, aucun compte.
 
 Dans Minecraft : ouvrir le chat avec **T**, coller avec **Ctrl + V** (Cmd + V sur Mac), puis appuyer sur Entrée. Les commandes « Enseignant » demandent les triches activées.
 
@@ -32,10 +34,10 @@ Chaque commande, et chaque choix des listes, est vérifiée avec les données of
 
 ## Mentions
 
-Application produite par IA (Claude) sous la supervision de Riga Ludovic, enseignant (enseignement secondaire spécialisé). Version bêta de découverte.
+Application produite par IA (Claude) sous la supervision de Ludo (@rprof_1), enseignant (enseignement secondaire spécialisé). Version bêta de découverte.
 
 Outil non officiel, sans lien avec Mojang ni Microsoft. Minecraft est une marque de Mojang et Microsoft.
 
 ## Licence
 
-[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.fr) : partage et adaptation permis, en citant l'auteur, sans usage commercial, sous la même licence. Voir le fichier `LICENSE`.
+[CC BY-NC-SA 4.0](LICENSE) · © 2026 Ludo (@rprof_1) · https://rprof1.com
